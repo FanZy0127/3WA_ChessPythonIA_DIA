@@ -58,7 +58,7 @@ class Run:
 
                 # Check the mouse release event
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    dragger.undrag_piece()
+                    dragger.undo_drag_piece()
 
                 # Check when the game is closed
                 elif event.type == pygame.QUIT:
