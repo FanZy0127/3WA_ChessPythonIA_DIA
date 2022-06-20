@@ -18,6 +18,7 @@ class Run:
 
         while True:
             game.display_background(screen)
+            game.display_pieces(screen)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
