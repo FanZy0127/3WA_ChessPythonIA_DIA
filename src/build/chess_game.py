@@ -11,7 +11,8 @@ class Chess:
         self.dragger = Dragger()
 
     # Display method
-    def display_background(self, surface):
+    @staticmethod
+    def display_background(surface):
         for row in range(ROWS):
             for column in range(COLUMNS):
                 if (row + column) % 2 == 0:

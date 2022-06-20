@@ -12,7 +12,8 @@ class Run:
         pygame.display.set_caption('3WA_DIA : Baptiste HARAMBOURE IA Chess Project')
         self.chess_game = Chess()
 
-    def display_screen_behavior(self, game, screen):
+    @staticmethod
+    def display_screen_behavior(game, screen):
         game.display_background(screen)
         game.display_pieces(screen)
 
