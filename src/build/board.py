@@ -42,3 +42,33 @@ class Board:
 
         # Initialization of the Kings
         self.squares[row_pieces][4] = Square(row_pieces, 4, King(color))
+
+    def calculate_allowed_moves(self, piece, row, column):
+
+        def knight_moves():
+            # A Knight has a maximum of 8 alowed moves
+            allowed_moves = [
+                (row + allowed_move_row, column + allowed_move_column)
+                for x, y in [(1, 2), (2, 1)]  # magnitudes
+                for allowed_move_row, allowed_move_column in [(x, y), (x, -y), (-x, y), (-x, -y)]  # directions
+            ]
+
+            for allowed_move_row, allowed_move_column in allowed_moves:
+                if Square.is_in_range(row + allowed_move_row, column + allowed_move_column):  # check if out of the board
+                    # TODO Resolve this part of the script
+                    if self.squares[allowed_move_row][allowed_move_column].is_empty_or_has_an_opponent_piece(piece.color):
+                        pass
+
+        if isinstance(piece, Pawn):
+            pass
+        elif isinstance(piece, Rook):
+            pass
+        elif isinstance(piece, Knight):
+            knight_moves()
+
+        elif isinstance(piece, Bishop):
+            pass
+        elif isinstance(piece, Queen):
+            pass
+        elif isinstance(piece, King):
+            pass
