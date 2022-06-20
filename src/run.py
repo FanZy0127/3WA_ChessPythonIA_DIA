@@ -22,14 +22,17 @@ class Run:
 
             for event in pygame.event.get():
 
-                # Check mouse click event
+                # Check the mouse click event
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pass
+                # chech the mouse motion event
                 elif event.type == pygame.MOUSEMOTION:
                     pass
-
+                # Check the mouse release event
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    pass
                 # Check when the game is closed
-                if event.type == pygame.QUIT:
+                elif event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
 
