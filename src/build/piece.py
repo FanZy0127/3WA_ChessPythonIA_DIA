@@ -19,7 +19,7 @@ class Piece:
 
     def set_image(self, size=80):
         self.image = os.path.join(
-            f'assets/images/imgs-{size}px/{self.color}_{self.name.lower()}.png'
+            f'assets/images/imgs-{size}px/{self.color}_{self.name.lower()}.{"svg" if size == 45 else "png"}'
         )
 
     def add_moves(self, move):

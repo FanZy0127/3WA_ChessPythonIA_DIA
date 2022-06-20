@@ -15,22 +15,48 @@ class Run:
     def infinite_run_loop(self):
         game = self.chess_game
         screen = self.screen
+        dragger = self.chess_game.dragger
+        board = self.chess_game.board
 
         while True:
             game.display_background(screen)
             game.display_pieces(screen)
 
+            # Condition avoiding pieces to flicker when dragged
+            if dragger.dragging:
+                dragger.update_blit(screen)
+
             for event in pygame.event.get():
 
                 # Check the mouse click event
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    pass
-                # chech the mouse motion event
+                    dragger.update_mouse(event.pos)
+                    clicked_row = dragger.mouse_y // SQUARE_SIZE
+                    clicked_column = dragger.mouse_x // SQUARE_SIZE
+
+                    # Check if the clicked square has a piece on it
+                    if board.squares[clicked_row][clicked_column].has_piece():
+                        piece = board.squares[clicked_row][clicked_column].piece
+                        dragger.save_base_position(event.pos)
+                        dragger.drag_piece(piece)
+
+                # Check the mouse motion event
                 elif event.type == pygame.MOUSEMOTION:
-                    pass
+
+                    if dragger.dragging:
+                        dragger.update_mouse(event.pos)
+                        # START
+                        # Necessary code to avoid flickering of all pieces while dragging one
+                        # Also avoid the dragged piece to be followed by ghosts(?) pieces of the same kind
+                        game.display_background(screen)
+                        game.display_pieces(screen)
+                        # END
+                        dragger.update_blit(screen)
+
                 # Check the mouse release event
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    pass
+                    dragger.undrag_piece()
+
                 # Check when the game is closed
                 elif event.type == pygame.QUIT:
                     pygame.quit()

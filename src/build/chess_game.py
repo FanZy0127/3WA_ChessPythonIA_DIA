@@ -1,12 +1,14 @@
 import pygame
 from src.consts.consts import *
 from src.build.board import Board
+from src.build.dragger import Dragger
 
 
 class Chess:
 
     def __init__(self):
         self.board = Board()
+        self.dragger = Dragger()
 
     # Display method
     def display_background(self, surface):
@@ -30,7 +32,10 @@ class Chess:
                 # Checking if there's already any piece on the square
                 if self.board.squares[row][column].has_piece():
                     piece = self.board.squares[row][column].piece
-                    piece_image = pygame.image.load(piece.image)
-                    image_center = column * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2
-                    piece.image_rectangle = piece_image.get_rect(center=image_center)
-                    surface.blit(piece_image, piece.image_rectangle)
+
+                    if piece is not self.dragger.piece:
+                        piece.set_image(size=80)
+                        piece_image = pygame.image.load(piece.image)
+                        image_center = column * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2
+                        piece.image_rectangle = piece_image.get_rect(center=image_center)
+                        surface.blit(piece_image, piece.image_rectangle)
