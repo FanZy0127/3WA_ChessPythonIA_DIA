@@ -12,6 +12,10 @@ class Run:
         pygame.display.set_caption('3WA_DIA : Baptiste HARAMBOURE IA Chess Project')
         self.chess_game = Chess()
 
+    def display_screen_behavior(self, game, screen):
+        game.display_background(screen)
+        game.display_pieces(screen)
+
     def infinite_run_loop(self):
         game = self.chess_game
         screen = self.screen
@@ -19,8 +23,7 @@ class Run:
         board = self.chess_game.board
 
         while True:
-            game.display_background(screen)
-            game.display_pieces(screen)
+            self.display_screen_behavior(game, screen)
 
             # Condition avoiding pieces to flicker when dragged
             if dragger.dragging:
@@ -45,12 +48,11 @@ class Run:
 
                     if dragger.dragging:
                         dragger.update_mouse(event.pos)
-                        # START
+
                         # Necessary code to avoid flickering of all pieces while dragging one
                         # Also avoid the dragged piece to be followed by ghosts(?) pieces of the same kind
-                        game.display_background(screen)
-                        game.display_pieces(screen)
-                        # END
+                        self.display_screen_behavior(game, screen)
+
                         dragger.update_blit(screen)
 
                 # Check the mouse release event
