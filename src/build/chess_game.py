@@ -9,6 +9,7 @@ class Chess:
     def __init__(self):
         self.board = Board()
         self.dragger = Dragger()
+        self.next_player = 'white'
 
     # Display method
     @staticmethod
@@ -55,3 +56,6 @@ class Chess:
                     SQUARE_SIZE
                 )
                 pygame.draw.rect(surface, color, rectangle)
+
+    def next_turn(self):
+        self.next_player = 'white' if self.next_player == 'black' else 'black'

@@ -44,10 +44,12 @@ class Run:
                     # Check if the clicked square has a piece on it
                     if board.squares[clicked_row][clicked_column].has_piece():
                         piece = board.squares[clicked_row][clicked_column].piece
-                        board.calculate_allowed_moves(piece, clicked_row, clicked_column)
-                        dragger.save_base_position(event.pos)
-                        dragger.drag_piece(piece)
-                        self.display_screen_behavior(game, screen)
+
+                        if piece.color == game.next_player:
+                            board.calculate_allowed_moves(piece, clicked_row, clicked_column)
+                            dragger.save_base_position(event.pos)
+                            dragger.drag_piece(piece)
+                            self.display_screen_behavior(game, screen)
 
                 # Check the mouse motion event
                 elif event.type == pygame.MOUSEMOTION:
@@ -76,6 +78,7 @@ class Run:
                         if board.validate_move(dragger.piece, move):
                             board.apply_move_on_screen(dragger.piece, move)
                             self.display_screen_behavior(game, screen)
+                            game.next_turn()
 
                     dragger.undo_drag_piece()
 
