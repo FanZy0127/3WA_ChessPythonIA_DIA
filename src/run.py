@@ -20,6 +20,7 @@ class Run:
         game.display_last_move(screen)
         game.display_moves(screen)
         game.display_pieces(screen)
+        game.display_hovered_square(screen)
 
     def infinite_run_loop(self):
         game = self.chess_game
@@ -54,6 +55,9 @@ class Run:
 
                 # Check the mouse motion event
                 elif event.type == pygame.MOUSEMOTION:
+                    row = event.pos[1] // SQUARE_SIZE
+                    column = event.pos[0] // SQUARE_SIZE
+                    game.set_hover_square(row, column)
 
                     if dragger.dragging:
                         dragger.update_mouse(event.pos)

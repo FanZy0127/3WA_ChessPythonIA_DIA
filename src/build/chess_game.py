@@ -10,6 +10,7 @@ class Chess:
         self.board = Board()
         self.dragger = Dragger()
         self.next_player = 'white'
+        self.hovered_square = None
 
     # Display method
     @staticmethod
@@ -17,7 +18,6 @@ class Chess:
         for row in range(ROWS):
             for column in range(COLUMNS):
                 if (row + column) % 2 == 0:
-                    # color = (255, 174, 105) # Caramel brown
                     color = (255, 191, 0)  # Amber yellow
                 else:
                     color = (0, 150, 152)  # Viridian green
@@ -67,5 +67,19 @@ class Chess:
                 rectangle = (position.column * SQUARE_SIZE, position.row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
                 pygame.draw.rect(surface, color, rectangle)
 
+    def display_hovered_square(self, surface):
+        if self.hovered_square:
+            color = (88, 24, 69)
+            rectangle = (
+                self.hovered_square.column * SQUARE_SIZE,
+                self.hovered_square.row * SQUARE_SIZE,
+                SQUARE_SIZE,
+                SQUARE_SIZE
+            )
+            pygame.draw.rect(surface, color, rectangle, width=5)
+
     def next_turn(self):
         self.next_player = 'white' if self.next_player == 'black' else 'black'
+
+    def set_hover_square(self, row, column):
+        self.hovered_square = self.board.squares[row][column]
