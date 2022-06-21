@@ -11,7 +11,7 @@ class Piece:
         self.name = name
         self.color = color
         self.value = theoric_value * value_sign
-        self.moves = []
+        self.legal_moves = []
         self.has_moved = False
         self.image = image_url
         self.set_image()
@@ -22,8 +22,8 @@ class Piece:
             f'assets/images/imgs-{size}px/{self.color}_{self.name.lower()}.{"svg" if size == 45 else "png"}'
         )
 
-    def add_moves(self, move):
-        self.moves.append(move)
+    def add_move(self, move):
+        self.legal_moves.append(move)
 
 
 class Pawn(Piece):

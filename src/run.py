@@ -15,6 +15,7 @@ class Run:
     @staticmethod
     def display_screen_behavior(game, screen):
         game.display_background(screen)
+        game.display_moves(screen)
         game.display_pieces(screen)
 
     def infinite_run_loop(self):
@@ -41,8 +42,10 @@ class Run:
                     # Check if the clicked square has a piece on it
                     if board.squares[clicked_row][clicked_column].has_piece():
                         piece = board.squares[clicked_row][clicked_column].piece
+                        board.calculate_allowed_moves(piece, clicked_row, clicked_column)
                         dragger.save_base_position(event.pos)
                         dragger.drag_piece(piece)
+                        self.display_screen_behavior(game, screen)
 
                 # Check the mouse motion event
                 elif event.type == pygame.MOUSEMOTION:
