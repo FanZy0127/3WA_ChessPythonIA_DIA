@@ -57,5 +57,15 @@ class Chess:
                 )
                 pygame.draw.rect(surface, color, rectangle)
 
+    def display_last_move(self, surface):
+        if self.board.last_registered_move:
+            base_square = self.board.last_registered_move.base_square
+            final_square = self.board.last_registered_move.final_square
+
+            for position in [base_square, final_square]:
+                color = (255, 192, 203) if position.row + position.column % 2 == 0 else (255, 105, 180)
+                rectangle = (position.column * SQUARE_SIZE, position.row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
+                pygame.draw.rect(surface, color, rectangle)
+
     def next_turn(self):
         self.next_player = 'white' if self.next_player == 'black' else 'black'

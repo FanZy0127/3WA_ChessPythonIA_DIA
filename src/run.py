@@ -17,6 +17,7 @@ class Run:
     @staticmethod
     def display_screen_behavior(game, screen):
         game.display_background(screen)
+        game.display_last_move(screen)
         game.display_moves(screen)
         game.display_pieces(screen)
 
