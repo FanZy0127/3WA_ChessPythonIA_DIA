@@ -11,6 +11,7 @@ class Board:
         self._instantiate()
         self._add_pieces('white')
         self._add_pieces('black')
+        self.last_registered_move = None
 
     def _instantiate(self):
 
@@ -56,6 +57,21 @@ class Board:
 
         move = Move(base_square, final_square)
         piece.add_move(move)
+
+    def apply_move_on_screen(self, piece, move):
+        base_square = move.base_square
+        final_square = move.final_square
+
+        self.squares[base_square.row][base_square.column].piece = None
+        self.squares[final_square.row][final_square.column].piece = piece
+
+        piece.has_moved = True  # Necessary to define the pawns allowed moves
+        piece.reset_moves()
+        self.last_registered_move = move
+
+    @staticmethod
+    def validate_move(piece, move):
+        return move in piece.legal_moves
 
     def calculate_allowed_moves(self, piece, row, column):
 

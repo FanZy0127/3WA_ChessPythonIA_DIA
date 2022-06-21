@@ -1,6 +1,8 @@
-import pygame
 import sys
+import pygame
 from consts.consts import *
+from build.move import Move
+from build.square import Square
 from build.chess_game import Chess
 
 
@@ -61,6 +63,20 @@ class Run:
 
                 # Check the mouse release event
                 elif event.type == pygame.MOUSEBUTTONUP:
+
+                    if dragger.dragging:
+                        dragger.update_mouse(event.pos)
+                        released_row = dragger.mouse_y // SQUARE_SIZE
+                        released_column = dragger.mouse_x // SQUARE_SIZE
+
+                        base_square = Square(dragger.base_row, dragger.base_column)
+                        final_square = Square(released_row, released_column)
+                        move = Move(base_square, final_square)
+
+                        if board.validate_move(dragger.piece, move):
+                            board.apply_move_on_screen(dragger.piece, move)
+                            self.display_screen_behavior(game, screen)
+
                     dragger.undo_drag_piece()
 
                 # Check when the game is closed

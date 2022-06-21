@@ -25,6 +25,9 @@ class Piece:
     def add_move(self, move):
         self.legal_moves.append(move)
 
+    def reset_moves(self):
+        self.legal_moves = []  # Reset of the legal moves array for the next turn
+
 
 class Pawn(Piece):
 
