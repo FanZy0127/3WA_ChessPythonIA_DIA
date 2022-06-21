@@ -131,7 +131,30 @@ class Board:
                     allowed_move_column = allowed_move_column + column_increment
 
         def king_moves():
-            pass
+
+            bordering_squares = [
+                (row - 1, column - 1),
+                (row - 1, column + 0),
+                (row - 1, column + 1),
+                (row + 0, column - 1),
+                (row + 0, column + 1),
+                (row + 1, column - 1),
+                (row + 1, column + 0),
+                (row + 1, column + 1)
+            ]
+
+            # Regular moves
+            for allowed_move in bordering_squares:
+                allowed_move_row, allowed_move_column = allowed_move
+
+                if Square.is_in_range(allowed_move_row, allowed_move_column):
+                    if self.squares[allowed_move_row][allowed_move_column].is_empty_or_has_an_opponent_piece(
+                            piece.color):
+                        self.move(piece, row, column, allowed_move_row, allowed_move_column)
+
+            # TODO Implement Queen/King Castling
+            # Queen Castling
+            # King Castling
 
         if isinstance(piece, Pawn):
             pawn_moves()
@@ -141,11 +164,6 @@ class Board:
             knight_moves()
         elif isinstance(piece, Bishop):
             straightline_moves([(-1, +1), (-1, -1), (1, 1), (1, -1)])
-            # straightline_moves([
-            #     (row, column)
-            #     for x, y in [(-1, 1), (1, -1)]
-            #     for row, column in [(x, y), (x, -y), (-x, y), (-x, -y)]
-            # ])
         elif isinstance(piece, Queen):
             straightline_moves([(-1, +1), (-1, -1), (1, 1), (1, -1), (-1, 0), (0, -1), (1, 0), (0, 1)])
         elif isinstance(piece, King):
