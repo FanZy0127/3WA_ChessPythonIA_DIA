@@ -64,7 +64,7 @@ class Board:
 
             # Regular moves (vertical)
             start_of_loop = row + piece.direction
-            # exclusive so excluded from the loop
+            # Exclusive so excluded from the loop
             end_of_loop = row + piece.direction * (1 + allowed_steps)  # Brackets needed for the white pawns destination
 
             # The loop then goes from [1;3[ for 1st move or [1;2[ after 1st move, mathematically speaking
@@ -78,6 +78,15 @@ class Board:
                     break  # Meaning the wanted square is not in range
 
             # Attacking moves (diagonal)
+            allowed_move_row = row + piece.direction
+            allowed_move_columns = [column - 1, column + 1]
+
+            for allowed_move_column in allowed_move_columns:
+                if Square.is_in_range(allowed_move_row, allowed_move_column):
+                    if self.squares[allowed_move_row][allowed_move_column].has_opponent_piece(piece.color):
+                        self.move(piece, row, column, allowed_move_row, allowed_move_column)
+
+            # TODO Implement the "prise en passant" and pawn promotion
 
         def rook_moves():
             pass
@@ -86,12 +95,12 @@ class Board:
             # A Knight has a maximum of 8 allowed moves
             allowed_moves = [
                 (row + allowed_move_row, column + allowed_move_column)
-                for x, y in [(1, 2), (2, 1)]  # magnitudes
-                for allowed_move_row, allowed_move_column in [(x, y), (x, -y), (-x, y), (-x, -y)]  # directions
+                for x, y in [(1, 2), (2, 1)]  # Magnitudes
+                for allowed_move_row, allowed_move_column in [(x, y), (x, -y), (-x, y), (-x, -y)]  # Directions
             ]
 
             for allowed_move_row, allowed_move_column in allowed_moves:
-                if Square.is_in_range(allowed_move_row, allowed_move_column):  # check if out of the board
+                if Square.is_in_range(allowed_move_row, allowed_move_column):  # Check if out of the board
                     if self.squares[allowed_move_row][allowed_move_column].is_empty_or_has_an_opponent_piece(
                             piece.color):
                         self.move(piece, row, column, allowed_move_row, allowed_move_column)
