@@ -88,9 +88,6 @@ class Board:
 
             # TODO Implement the "prise en passant" and pawn promotion
 
-        def rook_moves():
-            pass
-
         def knight_moves():
             # A Knight has a maximum of 8 allowed moves
             allowed_moves = [
@@ -105,11 +102,33 @@ class Board:
                             piece.color):
                         self.move(piece, row, column, allowed_move_row, allowed_move_column)
 
-        def bishop_moves():
-            pass
+        def straightline_moves(increments):
+            for increment in increments:
+                row_increment, column_increment = increment
+                allowed_move_row = row + row_increment
+                allowed_move_column = column + column_increment
 
-        def queen_moves():
-            pass
+                while True:
+                    if Square.is_in_range(allowed_move_row, allowed_move_column):
+                        base_square = Square(row, column)
+                        final_square = Square(allowed_move_row, allowed_move_column)
+                        move = Move(base_square, final_square)
+
+                        if self.squares[allowed_move_row][allowed_move_column].is_empty():
+                            piece.add_move(move)
+                        # Check if there's an opponent piece on the way
+                        elif self.squares[allowed_move_row][allowed_move_column].has_opponent_piece(piece.color):
+                            piece.add_move(move)
+                            break
+                        # Check if there's one of our pieces on the way
+                        elif self.squares[allowed_move_row][allowed_move_column].has_team_piece(piece.color):
+                            break
+                    else:
+                        break
+
+                    # Incrementing the increments
+                    allowed_move_row = allowed_move_row + row_increment
+                    allowed_move_column = allowed_move_column + column_increment
 
         def king_moves():
             pass
@@ -117,12 +136,17 @@ class Board:
         if isinstance(piece, Pawn):
             pawn_moves()
         elif isinstance(piece, Rook):
-            rook_moves()
+            straightline_moves([(-1, 0), (0, -1), (1, 0), (0, 1)])
         elif isinstance(piece, Knight):
             knight_moves()
         elif isinstance(piece, Bishop):
-            bishop_moves()
+            straightline_moves([(-1, +1), (-1, -1), (1, 1), (1, -1)])
+            # straightline_moves([
+            #     (row, column)
+            #     for x, y in [(-1, 1), (1, -1)]
+            #     for row, column in [(x, y), (x, -y), (-x, y), (-x, -y)]
+            # ])
         elif isinstance(piece, Queen):
-            queen_moves()
+            straightline_moves([(-1, +1), (-1, -1), (1, 1), (1, -1), (-1, 0), (0, -1), (1, 0), (0, 1)])
         elif isinstance(piece, King):
             king_moves()
