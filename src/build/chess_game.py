@@ -83,3 +83,6 @@ class Chess:
 
     def set_hover_square(self, row, column):
         self.hovered_square = self.board.squares[row][column]
+
+    def restart(self):
+        self.__init__()

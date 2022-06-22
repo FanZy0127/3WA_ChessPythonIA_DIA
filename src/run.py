@@ -87,6 +87,15 @@ class Run:
 
                     dragger.undo_drag_piece()
 
+                # Check when a key is pressed on keyboard
+                elif event.type == pygame.KEYDOWN:
+
+                    if event.key == pygame.K_ESCAPE:
+                        game.restart()
+                        game = self.chess_game
+                        dragger = self.chess_game.dragger
+                        board = self.chess_game.board
+
                 # Check when the game is closed
                 elif event.type == pygame.QUIT:
                     pygame.quit()
