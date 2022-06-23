@@ -4,10 +4,9 @@ import os
 
 class Piece:
 
-    def __init__(self, name, color, theoric_value, image_url=None, image_rectangle=None):
+    def __init__(self, name, color, theoric_value, is_promoted=False, image_url=None, image_rectangle=None):
 
         value_sign = 1 if color == 'white' else -1
-
         self.name = name
         self.color = color
         self.value = theoric_value * value_sign
@@ -16,6 +15,10 @@ class Piece:
         self.image = image_url
         self.set_image()
         self.texture_rectangle = image_rectangle
+        self.is_promoted = is_promoted
+
+    def __eq__(self, other):
+        return self.name == other.name
 
     def set_image(self, size=80):
         self.image = os.path.join(
@@ -44,10 +47,14 @@ class Pawn(Piece):
             Queen(color)
         ]
 
+    @staticmethod
+    def set_promotion(clicked_button, color):
+        # Parsing of the image path to get the Object class name
+        if '.png' in clicked_button:
+            clicked_button = os.path.basename(clicked_button)[6:-4].capitalize()
 
-class Rook(Piece):
-    def __init__(self, color):
-        super().__init__('Rook', color, 5.0)
+        # eval will return the piece class with the good color : ie. Knight('white')
+        return eval(clicked_button)(color)
 
 
 class Knight(Piece):
@@ -58,6 +65,11 @@ class Knight(Piece):
 class Bishop(Piece):
     def __init__(self, color):
         super().__init__('Bishop', color, 3.0)
+
+
+class Rook(Piece):
+    def __init__(self, color):
+        super().__init__('Rook', color, 5.0)
 
 
 class Queen(Piece):

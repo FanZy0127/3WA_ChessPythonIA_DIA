@@ -1,3 +1,4 @@
+from easygui import *
 from src.build.piece import *
 from src.consts.consts import *
 from src.build.move import Move
@@ -72,6 +73,20 @@ class Board:
     @staticmethod
     def validate_move(piece, move):
         return move in piece.legal_moves
+
+    # Method displaying choices for the pawn promotion, and handling the promotion itself
+    def promote_pawn(self, piece):
+        final_square = self.last_registered_move.final_square
+        promotion_choices = piece.get_promotion_choices(piece.color)
+        promotion_choices_names = [promotion_choice.name for promotion_choice in promotion_choices]
+        promotion_choices_images = [promotion_choice.image for promotion_choice in promotion_choices]
+        title = "Pawn promotion"
+        button = buttonbox("Choose a Pawn promotion", title=title,
+                           images=promotion_choices_images, choices=promotion_choices_names)
+
+        piece = self.squares[final_square.row][final_square.column].piece
+        self.squares[final_square.row][final_square.column].piece = piece.set_promotion(button, piece.color)
+        self.squares[final_square.row][final_square.column].piece.is_promoted = True
 
     def calculate_allowed_moves(self, piece, row, column):
 

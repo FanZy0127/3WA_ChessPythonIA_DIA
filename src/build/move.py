@@ -1,4 +1,3 @@
-
 class Move:
 
     def __init__(self, base_square, final_square):

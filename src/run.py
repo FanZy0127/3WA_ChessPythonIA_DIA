@@ -1,9 +1,10 @@
 import sys
 import pygame
 from consts.consts import *
-from build.move import Move
-from build.square import Square
-from build.chess_game import Chess
+from src.build.piece import *
+from src.build.move import Move
+from src.build.square import Square
+from src.build.chess_game import Chess
 
 
 class Run:
@@ -82,6 +83,11 @@ class Run:
 
                         if board.validate_move(dragger.piece, move):
                             board.apply_move_on_screen(dragger.piece, move)
+
+                            if final_square.row == 0 or final_square.row == 7:
+                                if isinstance(dragger.piece, Pawn):
+                                    game.board.promote_pawn(dragger.piece)
+
                             self.display_screen_behavior(game, screen)
                             game.next_turn()
 
@@ -90,11 +96,16 @@ class Run:
                 # Check when a key is pressed on keyboard
                 elif event.type == pygame.KEYDOWN:
 
-                    if event.key == pygame.K_ESCAPE:
+                    if event.key == pygame.K_r:
                         game.restart()
                         game = self.chess_game
                         dragger = self.chess_game.dragger
                         board = self.chess_game.board
+
+                    # Check when the game is closed with Esc
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        sys.exit()
 
                 # Check when the game is closed
                 elif event.type == pygame.QUIT:
