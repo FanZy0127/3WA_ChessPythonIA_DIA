@@ -66,6 +66,13 @@ class Board:
         self.squares[base_square.row][base_square.column].piece = None
         self.squares[final_square.row][final_square.column].piece = piece
 
+        if isinstance(piece, King):
+            if self.castling(base_square, final_square):
+                difference = final_square.column - base_square.column
+                rook = piece.left_rook if (difference < 0) else piece.right_rook
+                print(rook.legal_moves[-1])
+                self.apply_move_on_screen(rook, rook.legal_moves[-1])
+
         piece.has_moved = True  # Necessary to define the pawns allowed moves (1 or 2 squares)
         piece.reset_moves()
         self.last_registered_move = move
@@ -83,10 +90,14 @@ class Board:
         title = "Pawn promotion"
         button = buttonbox("Choose a Pawn promotion", title=title,
                            images=promotion_choices_images, choices=promotion_choices_names)
-
+        # TODO See if it is possible to beautify the display
         piece = self.squares[final_square.row][final_square.column].piece
         self.squares[final_square.row][final_square.column].piece = piece.set_promotion(button, piece.color)
         self.squares[final_square.row][final_square.column].piece.is_promoted = True
+
+    @staticmethod
+    def castling(base_square, final_square):
+        return abs(base_square.column - final_square.column) == 2
 
     def calculate_allowed_moves(self, piece, row, column):
 
@@ -183,9 +194,49 @@ class Board:
                             piece.color):
                         self.move(piece, row, column, allowed_move_row, allowed_move_column)
 
-            # TODO Implement Queen/King Castling, CHECK and CHECK MATE
-            # Queen Castling
-            # King Castling
+            # TODO CHECK // CHECK MATE && refacto Queen/King Castling,
+            # Castling
+            if not piece.has_moved:
+                # King Castling
+                right_rook = self.squares[row][7].piece
+                if isinstance(right_rook, Rook):
+                    if not right_rook.has_moved:
+                        for col in range(5, 7):
+                            # Castling is impossible cause there's pieces between the King and the Rook
+                            if self.squares[row][col].has_piece():
+                                break
+                            if col == 6:
+                                piece.right_rook = right_rook
+
+                                base_square = Square(row, 7)
+                                final_square = Square(row, 5)
+                                move = Move(base_square, final_square)
+                                right_rook.add_move(move)
+
+                                base_square = Square(row, column)
+                                final_square = Square(row, 6)
+                                move = Move(base_square, final_square)
+                                piece.add_move(move)
+                # Queen Castling
+                left_rook = self.squares[row][0].piece
+                if isinstance(left_rook, Rook):
+                    if not left_rook.has_moved:
+                        for col in range(1, 4):
+                            # Castling is impossible cause there's pieces between the King and the Rook
+                            if self.squares[row][col].has_piece():
+                                break
+                            if col == 3:
+                                piece.left_rook = left_rook
+
+                                base_square = Square(row, 0)
+                                final_square = Square(row, 3)
+                                move = Move(base_square, final_square)
+                                left_rook.add_move(move)
+
+                                base_square = Square(row, column)
+                                final_square = Square(row, 2)
+                                move = Move(base_square, final_square)
+                                piece.add_move(move)
 
         if isinstance(piece, Pawn):
             pawn_moves()
