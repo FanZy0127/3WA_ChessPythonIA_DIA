@@ -67,10 +67,10 @@ class Board:
         self.squares[final_square.row][final_square.column].piece = piece
 
         if isinstance(piece, King):
-            if self.castling(base_square, final_square):
+            if self.is_castling(base_square, final_square):
                 difference = final_square.column - base_square.column
                 rook = piece.left_rook if (difference < 0) else piece.right_rook
-                print(rook.legal_moves[-1])
+                print(difference)
                 self.apply_move_on_screen(rook, rook.legal_moves[-1])
 
         piece.has_moved = True  # Necessary to define the pawns allowed moves (1 or 2 squares)
@@ -95,8 +95,32 @@ class Board:
         self.squares[final_square.row][final_square.column].piece = piece.set_promotion(button, piece.color)
         self.squares[final_square.row][final_square.column].piece.is_promoted = True
 
+    def prepare_castling(self, king, rook, base_row, base_column, min_range, middle_column, max_range):
+        if not rook.has_moved:
+            for col in range(min_range, max_range):
+                # Castling is impossible cause there's pieces between the King and the Rook
+                if self.squares[base_row][col].has_piece():
+                    break
+                if col == middle_column:
+                    if middle_column == 6:
+                        king.right_rook = rook
+                        base_square = Square(base_row, max_range)
+                        final_square = Square(base_row, min_range)
+                    elif middle_column == 3:
+                        king.left_rook = rook
+                        base_square = Square(base_row, 0)  # 0 being the starting column of the Queen's Rook
+                        final_square = Square(base_row, middle_column)
+
+                    move = Move(base_square, final_square)
+                    rook.add_move(move)
+                    base_square = Square(base_row, base_column)
+                    # King's final_square column is 6 for Queen's Rook and 2 for King's Rook
+                    final_square = Square(base_row, (middle_column if middle_column == 6 else 2))
+                    move = Move(base_square, final_square)
+                    king.add_move(move)
+
     @staticmethod
-    def castling(base_square, final_square):
+    def is_castling(base_square, final_square):
         return abs(base_square.column - final_square.column) == 2
 
     def calculate_allowed_moves(self, piece, row, column):
@@ -194,49 +218,17 @@ class Board:
                             piece.color):
                         self.move(piece, row, column, allowed_move_row, allowed_move_column)
 
-            # TODO CHECK // CHECK MATE && refacto Queen/King Castling,
+            # TODO CHECK // CHECK MATE
             # Castling
             if not piece.has_moved:
                 # King Castling
                 right_rook = self.squares[row][7].piece
                 if isinstance(right_rook, Rook):
-                    if not right_rook.has_moved:
-                        for col in range(5, 7):
-                            # Castling is impossible cause there's pieces between the King and the Rook
-                            if self.squares[row][col].has_piece():
-                                break
-                            if col == 6:
-                                piece.right_rook = right_rook
-
-                                base_square = Square(row, 7)
-                                final_square = Square(row, 5)
-                                move = Move(base_square, final_square)
-                                right_rook.add_move(move)
-
-                                base_square = Square(row, column)
-                                final_square = Square(row, 6)
-                                move = Move(base_square, final_square)
-                                piece.add_move(move)
+                    self.prepare_castling(piece, right_rook, row, column, 5, 6, 7)
                 # Queen Castling
                 left_rook = self.squares[row][0].piece
                 if isinstance(left_rook, Rook):
-                    if not left_rook.has_moved:
-                        for col in range(1, 4):
-                            # Castling is impossible cause there's pieces between the King and the Rook
-                            if self.squares[row][col].has_piece():
-                                break
-                            if col == 3:
-                                piece.left_rook = left_rook
-
-                                base_square = Square(row, 0)
-                                final_square = Square(row, 3)
-                                move = Move(base_square, final_square)
-                                left_rook.add_move(move)
-
-                                base_square = Square(row, column)
-                                final_square = Square(row, 2)
-                                move = Move(base_square, final_square)
-                                piece.add_move(move)
+                    self.prepare_castling(piece, left_rook, row, column, 1, 3, 4)
 
         if isinstance(piece, Pawn):
             pawn_moves()
