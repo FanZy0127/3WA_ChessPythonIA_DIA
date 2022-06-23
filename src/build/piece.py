@@ -4,7 +4,7 @@ import os
 
 class Piece:
 
-    def __init__(self, name, color, theoric_value, is_promoted=False, image_url=None, image_rectangle=None):
+    def __init__(self, name, color, theoric_value, image_url=None, image_rectangle=None):
 
         value_sign = 1 if color == 'white' else -1
         self.name = name
@@ -15,7 +15,7 @@ class Piece:
         self.image = image_url
         self.set_image()
         self.texture_rectangle = image_rectangle
-        self.is_promoted = is_promoted
+        self.is_promoted = False
 
     def __eq__(self, other):
         return self.name == other.name
