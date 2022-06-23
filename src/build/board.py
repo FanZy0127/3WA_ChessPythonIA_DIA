@@ -117,7 +117,7 @@ class Board:
                     if self.squares[allowed_move_row][allowed_move_column].has_opponent_piece(piece.color):
                         self.move(piece, row, column, allowed_move_row, allowed_move_column)
 
-            # TODO Implement the "prise en passant" and pawn promotion
+            # TODO Implement the "prise en passant"
 
         def knight_moves():
             # A Knight has a maximum of 8 allowed moves
@@ -183,7 +183,7 @@ class Board:
                             piece.color):
                         self.move(piece, row, column, allowed_move_row, allowed_move_column)
 
-            # TODO Implement Queen/King Castling
+            # TODO Implement Queen/King Castling, CHECK and CHECK MATE
             # Queen Castling
             # King Castling
 
