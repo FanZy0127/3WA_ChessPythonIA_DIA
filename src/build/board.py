@@ -65,7 +65,7 @@ class Board:
         self.squares[base_square.row][base_square.column].piece = None
         self.squares[final_square.row][final_square.column].piece = piece
 
-        piece.has_moved = True  # Necessary to define the pawns allowed moves
+        piece.has_moved = True  # Necessary to define the pawns allowed moves (1 or 2 squares)
         piece.reset_moves()
         self.last_registered_move = move
 
