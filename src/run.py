@@ -49,7 +49,7 @@ class Run:
                         piece = board.squares[clicked_row][clicked_column].piece
 
                         if piece.color == game.next_player:
-                            board.calculate_allowed_moves(piece, clicked_row, clicked_column)
+                            board.calculate_allowed_moves(piece, clicked_row, clicked_column, boolean=True)
                             dragger.save_base_position(event.pos)
                             dragger.drag_piece(piece)
                             self.display_screen_behavior(game, screen)
