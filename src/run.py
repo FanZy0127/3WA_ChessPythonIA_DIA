@@ -83,6 +83,8 @@ class Run:
 
                         if board.validate_move(dragger.piece, move):
                             board.apply_move_on_screen(dragger.piece, move)
+                            # Method allowing the prise en passant if the pawn just moved, else it isn't allowed
+                            board.set_prise_en_passant(dragger.piece)
 
                             if final_square.row == 0 or final_square.row == 7:
                                 if isinstance(dragger.piece, Pawn):

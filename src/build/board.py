@@ -1,3 +1,4 @@
+import copy
 from easygui import *
 from src.build.piece import *
 from src.consts.consts import *
@@ -47,10 +48,10 @@ class Board:
         # Initialization of the Kings
         self.squares[row_pieces][4] = Square(row_pieces, 4, King(color))
 
-    @staticmethod
-    def move(piece, base_row, base_column, allowed_move_row, allowed_move_column):
+    def move(self, piece, base_row, base_column, allowed_move_row, allowed_move_column):
         base_square = Square(base_row, base_column)
-        final_square = Square(allowed_move_row, allowed_move_column)
+        final_square_piece = self.squares[allowed_move_row][allowed_move_column].piece
+        final_square = Square(allowed_move_row, allowed_move_column, final_square_piece )
 
         # print(piece.name, f'Base Square {(base_row, base_column)}',
         #       f'Destination {(allowed_move_row, allowed_move_column)}',
@@ -63,14 +64,24 @@ class Board:
         base_square = move.base_square
         final_square = move.final_square
 
+        empty_square_for_prise_en_passant = self.squares[final_square.row][final_square.column].is_empty()
+
+        # Update of the board move
         self.squares[base_square.row][base_square.column].piece = None
         self.squares[final_square.row][final_square.column].piece = piece
 
+        # Prise en passant
+        if isinstance(piece, Pawn):
+            difference = final_square.column - base_square.column
+            if difference != 0 and empty_square_for_prise_en_passant:
+                self.squares[base_square.row][base_square.column + difference].piece = None
+                self.squares[final_square.row][final_square.column].piece = piece
+
+        # Castling
         if isinstance(piece, King):
             if self.is_castling(base_square, final_square):
                 difference = final_square.column - base_square.column
                 rook = piece.left_rook if (difference < 0) else piece.right_rook
-                print(difference)
                 self.apply_move_on_screen(rook, rook.legal_moves[-1])
 
         piece.has_moved = True  # Necessary to define the pawns allowed moves (1 or 2 squares)
@@ -80,6 +91,31 @@ class Board:
     @staticmethod
     def validate_move(piece, move):
         return move in piece.legal_moves
+
+    def set_prise_en_passant(self, piece):
+        if not isinstance(piece, Pawn):
+            return
+
+        for row in range(ROWS):
+            for column in range(COLUMNS):
+                if isinstance(self.squares[row][column].piece, Pawn):
+                    self.squares[row][column].piece.prise_en_passant = False
+
+        piece.prise_en_passant = True
+
+    def define_prise_en_passant_move(self, piece, row, column, row_to_check, column_to_check, final_row):
+        if Square.is_in_range(column_to_check) and row == row_to_check:
+            if self.squares[row][column_to_check].has_opponent_piece(piece.color):
+                opponent_piece = self.squares[row][column_to_check].piece
+
+                if isinstance(opponent_piece, Pawn):
+                    if opponent_piece.prise_en_passant:
+                        base_square = Square(row, column)
+                        final_square = Square(final_row, column_to_check, opponent_piece)
+                        move = Move(base_square, final_square)
+
+                        # TODO Implement the functionality to see if the king is in check or not
+                        piece.add_move(move)
 
     # Method displaying choices for the pawn promotion, and handling the promotion itself
     def promote_pawn(self, piece):
@@ -152,7 +188,14 @@ class Board:
                     if self.squares[allowed_move_row][allowed_move_column].has_opponent_piece(piece.color):
                         self.move(piece, row, column, allowed_move_row, allowed_move_column)
 
-            # TODO Implement the "prise en passant"
+            # Prise en passant
+            row_to_check = 3 if piece.color == 'white' else 4
+            final_row = 2 if piece.color == 'white' else 5
+
+            # Left prise en passant
+            self.define_prise_en_passant_move(piece, row, column, row_to_check, column - 1, final_row)
+            # Right prise en passant
+            self.define_prise_en_passant_move(piece, row, column, row_to_check, column + 1, final_row)
 
         def knight_moves():
             # A Knight has a maximum of 8 allowed moves
@@ -177,7 +220,8 @@ class Board:
                 while True:
                     if Square.is_in_range(allowed_move_row, allowed_move_column):
                         base_square = Square(row, column)
-                        final_square = Square(allowed_move_row, allowed_move_column)
+                        final_square_piece = self.squares[allowed_move_row][allowed_move_column].piece
+                        final_square = Square(allowed_move_row, allowed_move_column, final_square_piece)
                         move = Move(base_square, final_square)
 
                         if self.squares[allowed_move_row][allowed_move_column].is_empty():
@@ -242,3 +286,5 @@ class Board:
             straightline_moves([(-1, +1), (-1, -1), (1, 1), (1, -1), (-1, 0), (0, -1), (1, 0), (0, 1)])
         elif isinstance(piece, King):
             king_moves()
+
+

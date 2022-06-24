@@ -36,6 +36,7 @@ class Pawn(Piece):
 
     def __init__(self, color):
         self.direction = -1 if color == 'white' else 1
+        self.prise_en_passant = False
         super().__init__('Pawn', color, 1.0)
 
     @staticmethod
