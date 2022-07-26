@@ -53,10 +53,6 @@ class Board:
         final_square_piece = self.squares[allowed_move_row][allowed_move_column].piece
         final_square = Square(allowed_move_row, allowed_move_column, final_square_piece)
 
-        # print(piece.name, f'Base Square {(base_row, base_column)}',
-        #       f'Destination {(allowed_move_row, allowed_move_column)}',
-        #       f'Direction {piece.direction if isinstance(piece, Pawn) else None}')
-
         return Move(base_square, final_square)
 
     def apply_move_on_screen(self, piece, move, not_allowed=False):
@@ -161,6 +157,8 @@ class Board:
                         if not self.is_in_check(king, king_move) and not self.is_in_check(rook, rook_move):
                             rook.add_move(rook_move)
                             king.add_move(king_move)
+                        # else:
+                        #     break
                     else:
                         rook.add_move(rook_move)
                         king.add_move(king_move)
@@ -179,7 +177,7 @@ class Board:
                     if boolean:
                         if not self.is_in_check(piece, move):
                             piece.add_move(move)
-                        # TODO Check if is this not causing bugs on check for castlings
+                        # TODO Check if this is not causing bugs on check for castlings
                         else:
                             break
                     else:

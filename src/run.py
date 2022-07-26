@@ -28,8 +28,14 @@ class Run:
         screen = self.screen
         dragger = self.chess_game.dragger
         board = self.chess_game.board
+        # game_over = False
+        # first_player = True  # True only if a human is playing white pieces. False if the AI is playing.
+        # second_player = False  # True only if a human is playing black pieces. False if the AI is playing.
 
         while True:
+            # is_human_turn = (game.next_player == 'white' and first_player) \
+            #                 or (game.next_player == 'black' and second_player)
+
             self.display_screen_behavior(game, screen)
 
             # Condition avoiding pieces to flicker when dragged
