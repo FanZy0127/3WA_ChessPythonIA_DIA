@@ -180,8 +180,8 @@ class Board:
                         if not self.is_in_check(piece, move):
                             piece.add_move(move)
                         # TODO Check if is this not causing bugs on check for castlings
-                        # else:
-                        #     break
+                        else:
+                            break
                     else:
                         piece.add_move(move)
 
