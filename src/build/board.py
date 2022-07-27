@@ -296,7 +296,7 @@ class Board:
             # Regular moves
             self.is_in_range_is_empty_or_has_opponent_piece_is_in_check(piece, row, column, bordering_squares, boolean)
 
-            # TODO PAT AND CHECK MATE
+            # TODO PAT, STALEMATE AND CHECKMATE
             # Castling
             if not piece.has_moved:
                 # King Castling
@@ -332,8 +332,8 @@ class Board:
                     piece_from_temporary_board = temporary_board.squares[row][column].piece
                     temporary_board.calculate_allowed_moves(piece_from_temporary_board, row, column, boolean=False)
 
-                    for m in piece_from_temporary_board.legal_moves:
-                        if isinstance(m.final_square.piece, King):
+                    for temporary_legal_moves in piece_from_temporary_board.legal_moves:
+                        if isinstance(temporary_legal_moves.final_square.piece, King):
                             return True
 
         return False
