@@ -1,5 +1,6 @@
 import copy
 from easygui import *
+from src.AI.chess_AI import *
 from src.build.piece import *
 from src.consts.consts import *
 from src.build.move import Move
@@ -157,8 +158,8 @@ class Board:
                         if not self.is_in_check(king, king_move) and not self.is_in_check(rook, rook_move):
                             rook.add_move(rook_move)
                             king.add_move(king_move)
-                        # else:
-                        #     break
+                        else:
+                            break
                     else:
                         rook.add_move(rook_move)
                         king.add_move(king_move)
@@ -337,3 +338,21 @@ class Board:
                             return True
 
         return False
+
+    def generate_random_ai_valid_moves(self, next_player_color):
+        valid_moves = []
+
+        for row in range(ROWS):
+            for column in range(COLUMNS):
+                square = self.squares[row][column]
+                piece = square.piece
+                if square.has_piece() and piece.color == next_player_color:
+                    self.calculate_allowed_moves(piece, row, column)
+                    if piece.legal_moves:
+                        valid_moves.append([piece, piece.legal_moves])
+
+        ai_move = find_random_move(valid_moves)
+        ai_piece_to_move = ai_move[0]
+        ai_move_to_do = ai_move[1][random.randint(0, len(ai_move[1]) - 1)]
+        if self.validate_move(ai_piece_to_move, ai_move_to_do):
+            self.apply_move_on_screen(ai_piece_to_move, ai_move_to_do)
