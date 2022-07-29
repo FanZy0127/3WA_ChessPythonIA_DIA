@@ -34,7 +34,7 @@ class Run:
         first_player_color = 'white'
         second_player_color = 'black'
 
-        while True:
+        while not game_over:
             is_human_turn = (game.next_player == first_player_color and first_player) \
                             or (game.next_player == second_player_color and second_player)
 
@@ -100,6 +100,11 @@ class Run:
                                         game.board.promote_pawn(dragger.piece)
 
                                 self.display_screen_behavior(game, screen)
+
+                                # TODO check if this is the best place for the checkmate condition
+                                if board.is_checkmate(dragger.piece, move):
+                                    game_over = True
+
                                 game.next_turn()
 
                         dragger.undo_drag_piece()
@@ -119,8 +124,8 @@ class Run:
                             sys.exit()
 
                 # When AI plays
-                elif not is_human_turn:
-                    board.generate_random_ai_valid_moves(second_player_color)
+                else:
+                    board.generate_random_ai_valid_moves(game.next_player)
                     game.next_turn()
 
                 # Check when the game is closed

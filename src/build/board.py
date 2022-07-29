@@ -339,20 +339,35 @@ class Board:
 
         return False
 
+    def is_checkmate(self, piece, move):
+        if isinstance(piece, King) and self.is_in_check(piece, move) and not piece.legal_moves:
+            return True
+
+        return False
+
     def generate_random_ai_valid_moves(self, next_player_color):
         valid_moves = []
-
+        # print(f'Valid moves before treatment : {valid_moves}')
         for row in range(ROWS):
             for column in range(COLUMNS):
                 square = self.squares[row][column]
-                piece = square.piece
-                if square.has_piece() and piece.color == next_player_color:
-                    self.calculate_allowed_moves(piece, row, column)
-                    if piece.legal_moves:
-                        valid_moves.append([piece, piece.legal_moves])
-
+                if square.has_piece():
+                    piece = square.piece
+                    if piece.color == next_player_color:
+                        self.calculate_allowed_moves(piece, row, column)
+                        if piece.legal_moves:
+                            # print(piece, piece.legal_moves)
+                            valid_moves.append([piece, row, column, piece.legal_moves])
+        # print(f'Valid moves after treatment : {valid_moves}')
         ai_move = find_random_move(valid_moves)
         ai_piece_to_move = ai_move[0]
-        ai_move_to_do = ai_move[1][random.randint(0, len(ai_move[1]) - 1)]
-        if self.validate_move(ai_piece_to_move, ai_move_to_do):
-            self.apply_move_on_screen(ai_piece_to_move, ai_move_to_do)
+        ai_piece_row = ai_move[1]
+        ai_piece_column = ai_move[2]
+        ai_move_to_do = ai_move[3][random.randint(0, len(ai_move[3]) - 1)]
+        # print(f'AI selected piece : {ai_piece_to_move} and move : {ai_move_to_do}')
+
+        for row in range(ROWS):
+            for column in range(COLUMNS):
+                if row == ai_piece_row and column == ai_piece_column:
+                    if self.validate_move(ai_piece_to_move, ai_move_to_do):
+                        self.apply_move_on_screen(ai_piece_to_move, ai_move_to_do)
