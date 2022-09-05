@@ -39,8 +39,6 @@ class Run:
 
             self.display_screen_behavior(game, screen)
 
-            # game.is_end_game_condition()
-
             # Condition avoiding pieces to flicker when dragged
             if dragger.dragging:
                 dragger.update_blit(screen)
