@@ -11,9 +11,6 @@ class Chess:
         self.dragger = Dragger()
         self.next_player = 'white'
         self.hovered_square = None
-        self.game_over = False
-        self.winner = None
-        self.score_is_draw = False
 
     # Display method
     @staticmethod
@@ -89,22 +86,3 @@ class Chess:
 
     def restart(self):
         self.__init__()
-
-    def is_end_game_condition(self):
-        board = self.board
-        for row in range(ROWS):
-            for column in range(COLUMNS):
-
-                if board.squares[row][column].has_piece():
-                    piece = board.squares[row][column].piece
-
-                    for move in piece.legal_moves:
-
-                        if board.is_stalemate(piece, move):
-                            self.score_is_draw = True
-                        if board.is_checkmate(piece, move):
-                            self.winner = self.next_player
-                        if board.is_checkmate(piece, move) or board.is_stalemate(piece, move):
-                            self.game_over = True
-
-        return

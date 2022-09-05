@@ -16,6 +16,9 @@ class Board:
         self._add_pieces('white')
         self._add_pieces('black')
         self.last_registered_move = None
+        self.game_over = False
+        self.loser = None
+        self.draw = False
 
     def _instantiate(self):
 
@@ -303,7 +306,6 @@ class Board:
             # Regular moves
             self.is_in_range_is_empty_or_has_opponent_piece_is_in_check(piece, row, column, bordering_squares, boolean)
 
-            # TODO PAT, STALEMATE AND CHECKMATE
             # Castling
             if not piece.has_moved:
                 # King Castling
@@ -347,12 +349,15 @@ class Board:
 
     def is_checkmate(self, piece, move):
         if isinstance(piece, King) and self.is_in_check(piece, move) and not piece.legal_moves:
+            self.game_over = True
+            self.loser = piece.color
             return True
 
         return False
 
     def is_stalemate(self, piece, move):
         if isinstance(piece, King) and not self.is_in_check(piece, move) and not piece.legal_moves:
+            self.draw = True
             return True
 
         return False
