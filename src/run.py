@@ -29,7 +29,7 @@ class Run:
         dragger = self.chess_game.dragger
         board = self.chess_game.board
         first_player = True  # True only if a human is playing white pieces. False if the AI is playing.
-        second_player = True  # True only if a human is playing black pieces. False if the AI is playing.
+        second_player = False  # True only if a human is playing black pieces. False if the AI is playing.
         first_player_color = 'white'
         second_player_color = 'black'
 

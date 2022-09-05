@@ -1,3 +1,4 @@
+import copy
 import math
 import random
 from src.consts.consts import *
@@ -17,19 +18,27 @@ def find_the_best_move(board, valid_moves):
     best_move = None
     board_score = 0
 
-    for move in valid_moves:
-        board.apply_move_on_screen(move[0], move[3])
+    temporary_board = copy.deepcopy(board)
 
-        if board.is_checkmate():
-            max_score = CHECKMATE
-        elif board.is_stalemate():
-            max_score = STALEMATE
-        else:
-            board_score = calculate_board_score_material(board)
+    for moves in valid_moves:
 
-        if board_score > max_score:
-            board_score = max_score
-            best_move = move
+        temporary_piece = copy.deepcopy(moves[0])
+        print(moves)
+        for move in moves[3]:
+            temporary_board.apply_move_on_screen(temporary_piece, move, not_allowed=True)
+
+            if temporary_board.is_checkmate(temporary_piece, move):
+                max_score = CHECKMATE
+            elif temporary_board.is_stalemate(temporary_piece, move):
+                max_score = STALEMATE
+            else:
+                board_score = calculate_board_score_material(temporary_board)
+
+            if board_score > max_score:
+                max_score = board_score
+                best_move = move
+
+    return best_move
 
 
 # Function to calculate the current board score

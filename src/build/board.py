@@ -203,10 +203,8 @@ class Board:
             # The loop then goes from [1;3[ for 1st move or [1;2[ after 1st move, mathematically speaking
             for allowed_move_row in range(start_of_loop, end_of_loop, piece.direction):
                 if Square.is_in_range(allowed_move_row):
-                    # TODO Check if this condition can be moins crassoux and still avoid bugs
-                    if self.squares[allowed_move_row][column].is_empty() \
-                            and not self.squares[allowed_move_row][column].has_team_piece(piece.color)\
-                            and not self.squares[allowed_move_row][column].has_opponent_piece(piece.color):
+                    if self.squares[allowed_move_row][column].is_empty():
+
                         move = self.set_move(row, column, allowed_move_row, column)
 
                         if boolean:
@@ -376,7 +374,11 @@ class Board:
                             # print(piece, piece.legal_moves)
                             valid_moves.append([piece, row, column, piece.legal_moves])
         # print(f'Valid moves after treatment : {valid_moves}')
-        ai_piece_and_move = find_random_move(valid_moves)
+        ai_piece_and_move = find_the_best_move(self, valid_moves)  # BEST MOVES
+
+        if ai_piece_and_move is None:
+            ai_piece_and_move = find_random_move(valid_moves)  # RANDOM MOVES
+
         ai_piece_to_move = ai_piece_and_move[0]
         ai_piece_row = ai_piece_and_move[1]
         ai_piece_column = ai_piece_and_move[2]
