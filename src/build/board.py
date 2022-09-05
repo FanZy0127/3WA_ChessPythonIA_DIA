@@ -1,4 +1,5 @@
 import copy
+import time
 from easygui import *
 from src.AI.chess_AI import *
 from src.build.piece import *
@@ -172,7 +173,9 @@ class Board:
         for allowed_move_row, allowed_move_column in allowed_moves_array:
             if Square.is_in_range(allowed_move_row, allowed_move_column):  # Check if out of the board
                 if self.squares[allowed_move_row][allowed_move_column].is_empty_or_has_an_opponent_piece(
-                        piece.color):
+                    piece.color) and not self.squares[allowed_move_row][allowed_move_column].has_team_piece(
+                    piece.color
+                ):
                     move = self.set_move(row, column, allowed_move_row, allowed_move_column)
 
                     if boolean:
@@ -192,12 +195,15 @@ class Board:
             # Regular moves (vertical)
             start_of_loop = row + piece.direction
             # Exclusive so excluded from the loop
-            end_of_loop = row + piece.direction * (1 + allowed_steps)  # Brackets needed for the white pawns destination
+            end_of_loop = row + (piece.direction * (1+allowed_steps))  # Brackets needed for the white pawns destination
 
             # The loop then goes from [1;3[ for 1st move or [1;2[ after 1st move, mathematically speaking
             for allowed_move_row in range(start_of_loop, end_of_loop, piece.direction):
                 if Square.is_in_range(allowed_move_row):
-                    if self.squares[allowed_move_row][column].is_empty():
+                    # TODO Check if this condition can be moins crassoux and still avoid bugs
+                    if self.squares[allowed_move_row][column].is_empty() \
+                            and not self.squares[allowed_move_row][column].has_team_piece(piece.color)\
+                            and not self.squares[allowed_move_row][column].has_opponent_piece(piece.color):
                         move = self.set_move(row, column, allowed_move_row, column)
 
                         if boolean:
@@ -333,14 +339,20 @@ class Board:
                     piece_from_temporary_board = temporary_board.squares[row][column].piece
                     temporary_board.calculate_allowed_moves(piece_from_temporary_board, row, column, boolean=False)
 
-                    for temporary_legal_moves in piece_from_temporary_board.legal_moves:
-                        if isinstance(temporary_legal_moves.final_square.piece, King):
+                    for temporary_legal_move in piece_from_temporary_board.legal_moves:
+                        if isinstance(temporary_legal_move.final_square.piece, King):
                             return True
 
         return False
 
     def is_checkmate(self, piece, move):
         if isinstance(piece, King) and self.is_in_check(piece, move) and not piece.legal_moves:
+            return True
+
+        return False
+
+    def is_stalemate(self, piece, move):
+        if isinstance(piece, King) and not self.is_in_check(piece, move) and not piece.legal_moves:
             return True
 
         return False
@@ -359,15 +371,23 @@ class Board:
                             # print(piece, piece.legal_moves)
                             valid_moves.append([piece, row, column, piece.legal_moves])
         # print(f'Valid moves after treatment : {valid_moves}')
-        ai_move = find_random_move(valid_moves)
-        ai_piece_to_move = ai_move[0]
-        ai_piece_row = ai_move[1]
-        ai_piece_column = ai_move[2]
-        ai_move_to_do = ai_move[3][random.randint(0, len(ai_move[3]) - 1)]
+        ai_piece_and_move = find_random_move(valid_moves)
+        ai_piece_to_move = ai_piece_and_move[0]
+        ai_piece_row = ai_piece_and_move[1]
+        ai_piece_column = ai_piece_and_move[2]
+        ai_move_to_do = ai_piece_and_move[3][random.randint(0, len(ai_piece_and_move[3]) - 1)]
         # print(f'AI selected piece : {ai_piece_to_move} and move : {ai_move_to_do}')
 
         for row in range(ROWS):
             for column in range(COLUMNS):
                 if row == ai_piece_row and column == ai_piece_column:
                     if self.validate_move(ai_piece_to_move, ai_move_to_do):
+
+                        time.sleep(1.25)
+
                         self.apply_move_on_screen(ai_piece_to_move, ai_move_to_do)
+                        self.set_prise_en_passant(ai_piece_to_move)
+
+                        if ai_move_to_do.final_square.row == 0 or ai_move_to_do.final_square.row == 7:
+                            if isinstance(ai_piece_to_move, Pawn):
+                                self.promote_pawn(ai_piece_to_move)

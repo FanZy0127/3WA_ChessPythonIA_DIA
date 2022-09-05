@@ -28,17 +28,18 @@ class Run:
         screen = self.screen
         dragger = self.chess_game.dragger
         board = self.chess_game.board
-        game_over = False
         first_player = True  # True only if a human is playing white pieces. False if the AI is playing.
         second_player = False  # True only if a human is playing black pieces. False if the AI is playing.
         first_player_color = 'white'
         second_player_color = 'black'
 
-        while not game_over:
+        while not game.game_over or game.score_is_draw:
             is_human_turn = (game.next_player == first_player_color and first_player) \
                             or (game.next_player == second_player_color and second_player)
 
             self.display_screen_behavior(game, screen)
+
+            # game.is_end_game_condition()
 
             # Condition avoiding pieces to flicker when dragged
             if dragger.dragging:
@@ -100,10 +101,6 @@ class Run:
                                         game.board.promote_pawn(dragger.piece)
 
                                 self.display_screen_behavior(game, screen)
-
-                                # TODO check if this is the best place for the checkmate condition
-                                if board.is_checkmate(dragger.piece, move):
-                                    game_over = True
 
                                 game.next_turn()
 
