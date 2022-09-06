@@ -203,7 +203,19 @@ class Board:
             # The loop then goes from [1;3[ for 1st move or [1;2[ after 1st move, mathematically speaking
             for allowed_move_row in range(start_of_loop, end_of_loop, piece.direction):
                 if Square.is_in_range(allowed_move_row):
-                    if self.squares[allowed_move_row][column].is_empty():
+                    # TODO refacto this condition with a clean function
+                    if self.squares[allowed_move_row][column].is_empty() or (
+                            (
+                                    piece.color == 'white' and
+                                    allowed_steps == 2 and
+                                    self.squares[allowed_move_row + 1][column].is_empty()
+                            ) or
+                            (
+                                    piece.color == 'black' and
+                                    allowed_steps == 2 and
+                                    self.squares[allowed_move_row - 1][column].is_empty()
+                            )
+                    ):
 
                         move = self.set_move(row, column, allowed_move_row, column)
 
