@@ -175,15 +175,24 @@ class Board:
     def is_in_range_is_empty_or_has_opponent_piece_is_in_check(self, piece, row, column, allowed_moves_array, boolean):
         for allowed_move_row, allowed_move_column in allowed_moves_array:
             if Square.is_in_range(allowed_move_row, allowed_move_column):  # Check if out of the board
-                if self.squares[allowed_move_row][allowed_move_column].is_empty_or_has_an_opponent_piece(
-                    piece.color) and not self.squares[allowed_move_row][allowed_move_column].has_team_piece(
-                    piece.color
-                ):
+                if self.squares[allowed_move_row][allowed_move_column].is_empty_or_has_an_opponent_piece(piece.color):
                     move = self.set_move(row, column, allowed_move_row, allowed_move_column)
 
                     if boolean:
                         if not self.is_in_check(piece, move):
                             piece.add_move(move)
+                            if piece.color == 'white':
+                                print(f'Allowed Move Row - 1 : {allowed_move_row - 1}')
+                            else:
+                                print(f'Allowed Move Row + 1 : {allowed_move_row + 1}')
+
+                            print(
+                                f'Pièce, row, column : {piece.name, piece.color, row, column}')
+                            print(
+                                f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed move row : {allowed_move_row}')
+                            print(
+                                f'Pièce, row, column : {piece.name, piece.color, row, column}/ Target square is empty : {self.squares[allowed_move_row][column].is_empty()}')
+                            print('-------------------------------------------------------------------------------')
                         # TODO Check if this is not causing bugs on check for castlings
                         else:
                             break
@@ -205,25 +214,41 @@ class Board:
                 if Square.is_in_range(allowed_move_row):
                     # TODO refacto this condition with a clean function
                     if self.squares[allowed_move_row][column].is_empty() or (
-                            (
-                                    piece.color == 'white' and
-                                    allowed_steps == 2 and
-                                    self.squares[allowed_move_row + 1][column].is_empty()
-                            ) or
-                            (
-                                    piece.color == 'black' and
-                                    allowed_steps == 2 and
-                                    self.squares[allowed_move_row - 1][column].is_empty()
-                            )
-                    ):
-
+                            allowed_steps == 2 and
+                            self.squares[allowed_move_row][column].is_empty() and
+                            self.squares[allowed_move_row + 1][column].is_empty()):
+                        print( f'Pièce, row, column : {piece.name, piece.color, row, column} IS ALLOWED TO MOVE')
                         move = self.set_move(row, column, allowed_move_row, column)
 
                         if boolean:
                             if not self.is_in_check(piece, move):
                                 piece.add_move(move)
+                                if piece.color == 'white':
+                                    print(f'Allowed Move Row - 1 : {allowed_move_row - 1}')
+                                else:
+                                    print(f'Allowed Move Row + 1 : {allowed_move_row + 1}')
+
+                                print(
+                                    f'Pièce, row, column : {piece.name, piece.color, row, column} / Fin de la loop : {end_of_loop}')
+                                print(
+                                    f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed move row : {allowed_move_row}')
+                                print(
+                                    f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed steps : {allowed_steps} / Target square is empty : {self.squares[allowed_move_row][column].is_empty()}')
+                                print('-------------------------------------------------------------------------------')
                         else:
                             piece.add_move(move)
+                            if piece.color == 'white':
+                                print(f'Allowed Move Row - 1 : {allowed_move_row - 1}')
+                            else:
+                                print(f'Allowed Move Row + 1 : {allowed_move_row + 1}')
+
+                            print(
+                                f'Pièce, row, column : {piece.name, piece.color, row, column} / Fin de la loop : {end_of_loop}')
+                            print(
+                                f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed move row : {allowed_move_row}')
+                            print(
+                                f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed steps : {allowed_steps} / Target square is empty : {self.squares[allowed_move_row][column].is_empty()}')
+                            print('-------------------------------------------------------------------------------')
                     else:
                         break  # If there's already a piece in front of our pawn, it can't move straight
                 else:
