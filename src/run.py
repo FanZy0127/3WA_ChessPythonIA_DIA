@@ -5,6 +5,7 @@ from src.build.piece import *
 from src.build.move import Move
 from src.build.square import Square
 from src.build.chess_game import Chess
+from src.database.database import *
 
 
 class Run:
@@ -14,6 +15,11 @@ class Run:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption('3WA_DIA : Baptiste HARAMBOURE IA Chess Project')
         self.chess_game = Chess()
+
+    try:
+        BoardState.query.all()
+    except:
+        BoardState.create_database()
 
     @staticmethod
     def display_screen_behavior(game, screen):
@@ -29,7 +35,7 @@ class Run:
         dragger = self.chess_game.dragger
         board = self.chess_game.board
         first_player = True  # True only if a human is playing white pieces. False if the AI is playing.
-        second_player = True  # True only if a human is playing black pieces. False if the AI is playing.
+        second_player = False  # True only if a human is playing black pieces. False if the AI is playing.
         first_player_color = 'white'
         second_player_color = 'black'
 

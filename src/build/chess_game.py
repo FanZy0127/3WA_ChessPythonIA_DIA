@@ -81,6 +81,7 @@ class Chess:
     def next_turn(self):
         self.next_player = 'white' if self.next_player == 'black' else 'black'
 
+    # Define which squares have to be hovered with a different color
     def set_hover_square(self, row, column):
         self.hovered_square = self.board.squares[row][column]
 

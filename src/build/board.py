@@ -1,11 +1,13 @@
 import copy
 import time
+import json
 from easygui import *
 from src.AI.chess_AI import *
 from src.build.piece import *
 from src.consts.consts import *
 from src.build.move import Move
 from src.build.square import Square
+from src.database.database import *
 
 
 class Board:
@@ -181,18 +183,18 @@ class Board:
                     if boolean:
                         if not self.is_in_check(piece, move):
                             piece.add_move(move)
-                            if piece.color == 'white':
-                                print(f'Allowed Move Row - 1 : {allowed_move_row - 1}')
-                            else:
-                                print(f'Allowed Move Row + 1 : {allowed_move_row + 1}')
-
-                            print(
-                                f'Pièce, row, column : {piece.name, piece.color, row, column}')
-                            print(
-                                f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed move row : {allowed_move_row}')
-                            print(
-                                f'Pièce, row, column : {piece.name, piece.color, row, column}/ Target square is empty : {self.squares[allowed_move_row][column].is_empty()}')
-                            print('-------------------------------------------------------------------------------')
+                            # if piece.color == 'white':
+                            #     print(f'Allowed Move Row - 1 : {allowed_move_row - 1}')
+                            # else:
+                            #     print(f'Allowed Move Row + 1 : {allowed_move_row + 1}')
+                            #
+                            # print(
+                            #     f'Pièce, row, column : {piece.name, piece.color, row, column}')
+                            # print(
+                            #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed move row : {allowed_move_row}')
+                            # print(
+                            #     f'Pièce, row, column : {piece.name, piece.color, row, column}/ Target square is empty : {self.squares[allowed_move_row][column].is_empty()}')
+                            # print('-------------------------------------------------------------------------------')
                         # TODO Check if this is not causing bugs on check for castlings
                         else:
                             break
@@ -217,38 +219,38 @@ class Board:
                             allowed_steps == 2 and
                             self.squares[allowed_move_row][column].is_empty() and
                             self.squares[allowed_move_row + 1][column].is_empty()):
-                        print( f'Pièce, row, column : {piece.name, piece.color, row, column} IS ALLOWED TO MOVE')
+                        # print( f'Pièce, row, column : {piece.name, piece.color, row, column} IS ALLOWED TO MOVE')
                         move = self.set_move(row, column, allowed_move_row, column)
 
                         if boolean:
                             if not self.is_in_check(piece, move):
                                 piece.add_move(move)
-                                if piece.color == 'white':
-                                    print(f'Allowed Move Row - 1 : {allowed_move_row - 1}')
-                                else:
-                                    print(f'Allowed Move Row + 1 : {allowed_move_row + 1}')
-
-                                print(
-                                    f'Pièce, row, column : {piece.name, piece.color, row, column} / Fin de la loop : {end_of_loop}')
-                                print(
-                                    f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed move row : {allowed_move_row}')
-                                print(
-                                    f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed steps : {allowed_steps} / Target square is empty : {self.squares[allowed_move_row][column].is_empty()}')
-                                print('-------------------------------------------------------------------------------')
+                                # if piece.color == 'white':
+                                #     print(f'Allowed Move Row - 1 : {allowed_move_row - 1}')
+                                # else:
+                                #     print(f'Allowed Move Row + 1 : {allowed_move_row + 1}')
+                                #
+                                # print(
+                                #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Fin de la loop : {end_of_loop}')
+                                # print(
+                                #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed move row : {allowed_move_row}')
+                                # print(
+                                #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed steps : {allowed_steps} / Target square is empty : {self.squares[allowed_move_row][column].is_empty()}')
+                                # print('-------------------------------------------------------------------------------')
                         else:
                             piece.add_move(move)
-                            if piece.color == 'white':
-                                print(f'Allowed Move Row - 1 : {allowed_move_row - 1}')
-                            else:
-                                print(f'Allowed Move Row + 1 : {allowed_move_row + 1}')
+                            # if piece.color == 'white':
+                            #     print(f'Allowed Move Row - 1 : {allowed_move_row - 1}')
+                            # else:
+                            #     print(f'Allowed Move Row + 1 : {allowed_move_row + 1}')
 
-                            print(
-                                f'Pièce, row, column : {piece.name, piece.color, row, column} / Fin de la loop : {end_of_loop}')
-                            print(
-                                f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed move row : {allowed_move_row}')
-                            print(
-                                f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed steps : {allowed_steps} / Target square is empty : {self.squares[allowed_move_row][column].is_empty()}')
-                            print('-------------------------------------------------------------------------------')
+                            # print(
+                            #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Fin de la loop : {end_of_loop}')
+                            # print(
+                            #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed move row : {allowed_move_row}')
+                            # print(
+                            #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed steps : {allowed_steps} / Target square is empty : {self.squares[allowed_move_row][column].is_empty()}')
+                            # print('-------------------------------------------------------------------------------')
                     else:
                         break  # If there's already a piece in front of our pawn, it can't move straight
                 else:
@@ -397,37 +399,70 @@ class Board:
 
         return False
 
-    def generate_random_ai_valid_moves(self, next_player_color):
-        valid_moves = []
-        # print(f'Valid moves before treatment : {valid_moves}')
+    def get_board_state(self):
+        board_state = []
+
         for row in range(ROWS):
+            row_state = []
             for column in range(COLUMNS):
                 square = self.squares[row][column]
+
                 if square.has_piece():
-                    piece = square.piece
-                    if piece.color == next_player_color:
-                        self.calculate_allowed_moves(piece, row, column)
-                        if piece.legal_moves:
-                            # print(piece, piece.legal_moves)
-                            valid_moves.append([piece, row, column, piece.legal_moves])
-        # print(f'Valid moves after treatment : {valid_moves}')
-        ai_piece_and_move = find_the_best_move(self, valid_moves)  # BEST MOVES
+                    row_state.append([square.piece.name, square.piece.color])
+                else:
+                    row_state.append(None)
+            board_state.append(row_state)
 
-        if ai_piece_and_move is None:
-            ai_piece_and_move = find_random_move(valid_moves)  # RANDOM MOVES
+        return board_state
 
-        ai_piece_to_move = ai_piece_and_move[0]
-        ai_piece_row = ai_piece_and_move[1]
-        ai_piece_column = ai_piece_and_move[2]
-        ai_move_to_do = ai_piece_and_move[3][random.randint(0, len(ai_piece_and_move[3]) - 1)]
-        # print(f'AI selected piece : {ai_piece_to_move} and move : {ai_move_to_do}')
+    def generate_random_ai_valid_moves(self, next_player_color):
+
+        try:
+            BoardState.query_board_state(self.get_board_state())
+            piece_to_move_and_best_move = json.loads(
+                BoardState.query_board_state_based_on_player(self.get_board_state(), next_player_color))
+        except:
+            valid_moves = []
+            # print(f'Valid moves before treatment : {valid_moves}')
+            for row in range(ROWS):
+                for column in range(COLUMNS):
+                    square = self.squares[row][column]
+                    if square.has_piece():
+                        piece = square.piece
+                        if piece.color == next_player_color:
+                            self.calculate_allowed_moves(piece, row, column)
+                            if piece.legal_moves:
+                                # print(piece, piece.legal_moves)
+                                valid_moves.append([piece, row, column, piece.legal_moves])
+
+            # print(f'Valid moves after treatment : {valid_moves}')
+            piece_to_move_and_best_move = find_the_best_move(self, valid_moves)  # AI GREEDY ALGO BEST MOVE
+            # print(piece_to_move_and_best_move)
+            BoardState.save_board_state(
+                self.get_board_state(), next_player_color,
+                piece_to_move_and_best_move)
+
+            if piece_to_move_and_best_move is None:
+                print(f'AI MADE A RANDOM MOVE')
+                piece_to_move_and_best_move = find_random_move(valid_moves)  # AI RANDOM MOVE
+
+                print(f'Piece to move and best move : {piece_to_move_and_best_move}')
+                ai_piece_to_move = piece_to_move_and_best_move[0]
+                print(f'Piece to move : {ai_piece_to_move}')
+                ai_piece_row = piece_to_move_and_best_move[1]
+                print(f'AI Piece Row : {ai_piece_row}')
+                ai_piece_column = piece_to_move_and_best_move[2]
+                print(f'AI Piece Column : {ai_piece_column}')
+                ai_move_to_do = piece_to_move_and_best_move[3][
+                    random.randint(0, len(piece_to_move_and_best_move[3]) - 1)
+                ]
 
         for row in range(ROWS):
             for column in range(COLUMNS):
                 if row == ai_piece_row and column == ai_piece_column:
                     if self.validate_move(ai_piece_to_move, ai_move_to_do):
 
-                        time.sleep(1.25)
+                        time.sleep(.85)
 
                         self.apply_move_on_screen(ai_piece_to_move, ai_move_to_do)
                         self.set_prise_en_passant(ai_piece_to_move)
