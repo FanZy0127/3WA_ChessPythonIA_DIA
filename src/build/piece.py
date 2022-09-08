@@ -82,4 +82,4 @@ class King(Piece):
     def __init__(self, color):
         self.left_rook = None
         self.right_rook = None
-        super().__init__('King', color, math.inf)
+        super().__init__('King', color, 9999)

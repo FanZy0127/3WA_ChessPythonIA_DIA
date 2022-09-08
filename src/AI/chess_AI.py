@@ -39,9 +39,9 @@ def find_the_best_move(board, valid_moves):
             if board_score > max_score:
                 max_score = board_score
                 best_move = move
-                # piece_to_move = piece
+                piece_to_move = piece
 
-    return best_move
+    return piece_to_move, best_move
 
 
 # Function to calculate the current board score
@@ -53,5 +53,5 @@ def calculate_board_score_material(board):
             if board.squares[row][column].has_piece():
                 piece = board.squares[row][column].piece
                 score_material += piece.value
-
+    # print(f'Score Material : {score_material}')
     return score_material

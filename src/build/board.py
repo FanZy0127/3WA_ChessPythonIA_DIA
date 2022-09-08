@@ -435,12 +435,31 @@ class Board:
                                 # print(piece, piece.legal_moves)
                                 valid_moves.append([piece, row, column, piece.legal_moves])
 
-            # print(f'Valid moves after treatment : {valid_moves}')
             piece_to_move_and_best_move = find_the_best_move(self, valid_moves)  # AI GREEDY ALGO BEST MOVE
-            # print(piece_to_move_and_best_move)
+
+            piece_to_store = piece_to_move_and_best_move[0].name
+            piece_color_to_store = piece_to_move_and_best_move[0].color
+            base_square_row_to_store = piece_to_move_and_best_move[1].base_square.row
+            base_square_column_to_store = piece_to_move_and_best_move[1].base_square.column
+            final_square_row_to_store = piece_to_move_and_best_move[1].final_square.row
+            final_square_column_to_store = piece_to_move_and_best_move[1].final_square.column
+
+            best_move_matrix = [
+                [piece_to_store, piece_color_to_store],
+                [base_square_row_to_store,base_square_column_to_store],
+                [final_square_row_to_store, final_square_column_to_store]
+            ]
+
+            # print(best_move_matrix)
+
             BoardState.save_board_state(
                 self.get_board_state(), next_player_color,
-                piece_to_move_and_best_move)
+                best_move_matrix)
+
+            ai_piece_to_move = piece_to_move_and_best_move[0]
+            ai_piece_row = base_square_row_to_store
+            ai_piece_column = base_square_column_to_store
+            ai_move_to_do = piece_to_move_and_best_move[1]
 
             if piece_to_move_and_best_move is None:
                 print(f'AI MADE A RANDOM MOVE')
@@ -448,10 +467,13 @@ class Board:
 
                 print(f'Piece to move and best move : {piece_to_move_and_best_move}')
                 ai_piece_to_move = piece_to_move_and_best_move[0]
+
                 print(f'Piece to move : {ai_piece_to_move}')
                 ai_piece_row = piece_to_move_and_best_move[1]
+
                 print(f'AI Piece Row : {ai_piece_row}')
                 ai_piece_column = piece_to_move_and_best_move[2]
+
                 print(f'AI Piece Column : {ai_piece_column}')
                 ai_move_to_do = piece_to_move_and_best_move[3][
                     random.randint(0, len(piece_to_move_and_best_move[3]) - 1)
