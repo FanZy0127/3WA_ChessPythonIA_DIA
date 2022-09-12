@@ -27,12 +27,35 @@ class BoardState(db.Model):
 
     @staticmethod
     def query_board_state(board_state):
-        return BoardState.query(BoardState).filter_by(BoardState.board_state == json.dumps(board_state)).first()
+        print(f'-----------------------------------------------')
+        print(f'Requesting board to the Chess database')
+        # print(f'BOARD STATE BEFORE JSONIFY : {board_state}')
+        # print(f'BOARD STATE AFTER JSONIFY : {json.dumps(board_state)}')
+        print(
+            f'REQUEST RESULT : '
+            f'{db.session.query(BoardState).filter(BoardState.board_state == json.dumps(board_state)).first()}'
+        )
+        if db.session.query(BoardState).filter(BoardState.board_state == json.dumps(board_state)).first():
+            print('TRUE ==> THE REQUEST WORKED OUT !!!')
+            return True
+
+        print('FALSE ==> THE REQUEST FAILED !!!')
+        return False
 
     @staticmethod
-    def query_board_state_based_on_player(board_state, next_player_color):
-        return BoardState.query(BoardState.best_move).filter_by(
-            BoardState.board_state == json.dumps(board_state) and BoardState.active_player is not next_player_color)
+    def query_best_move_based_on_board_state_and_player(board_state, next_player_color):
+        # print(f'-----------------------------------------------')
+        # print(f'Requesting BEST MOVE to the Chess database')
+        # print(f'BOARD STATE : {json.dumps(board_state)}')
+        # print(f'PLAYER COLOR : {next_player_color}')
+
+        result = db.session.query(BoardState.best_move).filter(
+                    BoardState.board_state == json.dumps(board_state),
+                    BoardState.active_player == next_player_color).first()
+
+        result_as_dict = result._asdict()
+
+        return json.loads(result_as_dict["best_move"])
 
     @staticmethod
     def save_board_state(board_state, next_player_color, best_move):

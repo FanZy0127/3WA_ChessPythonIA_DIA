@@ -419,39 +419,63 @@ class Board:
 
         try:
             BoardState.query_board_state(self.get_board_state())
-            piece_to_move_and_best_move = json.loads(
-                BoardState.query_board_state_based_on_player(self.get_board_state(), next_player_color))
-        except:
-            valid_moves = []
-            # print(f'Valid moves before treatment : {valid_moves}')
+
+            print(f'-----------------------------------------------')
+            print('THE BOARD HAS ALREADY BEEN REGISTERED IN DATABASE')
+
+            piece_to_move_and_best_move = BoardState.query_best_move_based_on_board_state_and_player(
+                self.get_board_state(), next_player_color)
+
+            print(f'-----------------------------------------------')
+            print(f'HERE ARE THE PIECE TO MOVE AND ITS BEST MOVE : {piece_to_move_and_best_move}')
+
+            ai_piece_row = piece_to_move_and_best_move[1][0]
+            print(f'AI Piece Row : {ai_piece_row}')
+
+            ai_piece_column = piece_to_move_and_best_move[1][1]
+            print(f'AI Piece Column : {ai_piece_column}')
+
             for row in range(ROWS):
                 for column in range(COLUMNS):
                     square = self.squares[row][column]
                     if square.has_piece():
                         piece = square.piece
-                        if piece.color == next_player_color:
-                            self.calculate_allowed_moves(piece, row, column)
-                            if piece.legal_moves:
-                                # print(piece, piece.legal_moves)
-                                valid_moves.append([piece, row, column, piece.legal_moves])
+                        if piece.name == piece_to_move_and_best_move[0][0] and piece.color == \
+                                piece_to_move_and_best_move[0][1] and row == ai_piece_row and column == ai_piece_column:
+                            ai_piece_to_move = piece
 
-            piece_to_move_and_best_move = find_the_best_move(self, valid_moves)  # AI GREEDY ALGO BEST MOVE
+            print(f'-----------------------------------------------')
+            print(f'Piece to move : {ai_piece_to_move}')
+
+            base_square = Square(ai_piece_row, ai_piece_column)
+            final_square = Square(piece_to_move_and_best_move[2][0], piece_to_move_and_best_move[2][1])
+            ai_move_to_do = Move(base_square, final_square)
+            print(f'AI Move To Do {ai_move_to_do}')
+
+            ai_piece_to_move.add_move(ai_move_to_do)
+        except:
+            valid_moves = self.get_valid_moves(next_player_color)
+            # AI GREEDY ALGO BEST MOVE
+            piece_to_move_and_best_move = find_the_best_move(self, valid_moves, next_player_color)
 
             piece_to_store = piece_to_move_and_best_move[0].name
             piece_color_to_store = piece_to_move_and_best_move[0].color
+            piece_value_to_store = abs(piece_to_move_and_best_move[0].value)
             base_square_row_to_store = piece_to_move_and_best_move[1].base_square.row
             base_square_column_to_store = piece_to_move_and_best_move[1].base_square.column
             final_square_row_to_store = piece_to_move_and_best_move[1].final_square.row
             final_square_column_to_store = piece_to_move_and_best_move[1].final_square.column
 
             best_move_matrix = [
-                [piece_to_store, piece_color_to_store],
+                [piece_to_store, piece_color_to_store, piece_value_to_store],
                 [base_square_row_to_store,base_square_column_to_store],
                 [final_square_row_to_store, final_square_column_to_store]
             ]
 
             # print(best_move_matrix)
 
+            print(f'-----------------------------------------------')
+            print(f'BOARD STATE AND BEST MOVE ARE ABOUT TO BE SAVED')
             BoardState.save_board_state(
                 self.get_board_state(), next_player_color,
                 best_move_matrix)
@@ -485,10 +509,25 @@ class Board:
                     if self.validate_move(ai_piece_to_move, ai_move_to_do):
 
                         time.sleep(.85)
-
                         self.apply_move_on_screen(ai_piece_to_move, ai_move_to_do)
                         self.set_prise_en_passant(ai_piece_to_move)
 
                         if ai_move_to_do.final_square.row == 0 or ai_move_to_do.final_square.row == 7:
                             if isinstance(ai_piece_to_move, Pawn):
                                 self.promote_pawn(ai_piece_to_move)
+
+    def get_valid_moves(self, next_player_color):
+        valid_moves = []
+        # print(f'Valid moves before treatment : {valid_moves}')
+        for row in range(ROWS):
+            for column in range(COLUMNS):
+                square = self.squares[row][column]
+                if square.has_piece():
+                    piece = square.piece
+                    if piece.color == next_player_color:
+                        self.calculate_allowed_moves(piece, row, column)
+                        if piece.legal_moves:
+                            # print(piece, piece.legal_moves)
+                            valid_moves.append([piece, row, column, piece.legal_moves])
+
+        return valid_moves
