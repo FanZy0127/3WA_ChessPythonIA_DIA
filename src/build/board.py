@@ -8,7 +8,7 @@ from src.consts.consts import *
 from src.build.move import Move
 from src.build.square import Square
 from src.database.database import *
-from src.build.fen_translator import Fen
+from src.build.translator import Translator
 
 
 class Board:
@@ -419,7 +419,6 @@ class Board:
     def generate_ai_valid_moves(self, next_player_color):
 
         try:
-            print(f'TRY TO TRANSLATE BOARD TO FEN : {Fen.translate_board_matrix_to_fen(self.get_board_state())}')
             BoardState.query_board_state(self.get_board_state())
 
             print(f'-----------------------------------------------')
@@ -456,10 +455,10 @@ class Board:
 
             ai_piece_to_move.add_move(ai_move_to_do)
         except:
-            print(f'PLAYER COLOR : {next_player_color}')
             valid_moves = self.get_valid_moves(next_player_color)
-            # AI GREEDY ALGO BEST MOVE
-            piece_to_move_and_best_move = find_the_best_move(self, valid_moves, next_player_color)
+            # AI GREEDY ALGO BEST MOVE. DEPRECIATED
+            # piece_to_move_and_best_move = get_the_best_move(self, valid_moves, next_player_color)
+            piece_to_move_and_best_move = get_best_move_from_trained_network(self, next_player_color)
 
             piece_to_store = piece_to_move_and_best_move[0].name
             piece_color_to_store = piece_to_move_and_best_move[0].color
@@ -489,7 +488,7 @@ class Board:
             ai_move_to_do = piece_to_move_and_best_move[1]
 
             if piece_to_move_and_best_move is None:
-                piece_to_move_and_best_move = find_random_move(valid_moves)  # AI RANDOM MOVE
+                piece_to_move_and_best_move = get_random_move(valid_moves)  # AI RANDOM MOVE
 
                 ai_piece_to_move = piece_to_move_and_best_move[0]
 

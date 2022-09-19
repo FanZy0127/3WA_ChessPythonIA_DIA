@@ -1,10 +1,10 @@
 from src.consts.consts import *
 
 
-class Fen:
+class Translator:
 
     @staticmethod
-    def translate_board_matrix_to_fen(board_matrix):
+    def translate_board_matrix_to_fen(board_matrix, player_color):
         fen_string = ''
 
         for row_matrix in board_matrix:
@@ -48,9 +48,9 @@ class Fen:
                 fen_string += str(empty_squares)
 
             fen_string += '/'
+        fen_string = fen_string.rstrip(fen_string[-1])
 
-        print(f'BOARD STATE AS FEN STRING : { fen_string.rstrip(fen_string[-1]) }')
-        return fen_string.rstrip(fen_string[-1])
+        return fen_string + (' w' if player_color == 'white' else ' b')
 
     @staticmethod
     def translate_fen_to_board_matrix(fen_string):

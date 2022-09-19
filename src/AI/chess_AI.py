@@ -1,21 +1,23 @@
 import copy
 import math
 import random
+import src.AI.min_max_network as network
 from src.consts.consts import *
+from src.build.translator import Translator
 
 CHECKMATE = math.inf
 STALEMATE = 0
-DEPTH = 2
+DEPTH = 1
 
 
 # Function returning a random move to do for the AI.
-def find_random_move(valid_moves):
+def get_random_move(valid_moves: list):
     return valid_moves[random.randint(0, len(valid_moves) - 1)]
 
 
 # Function returning the best move for the AI, based on material, 1 depth ahead (greedy algo).
 # Turned it into a basic self made dirty MinMax algorithm, which ends up being SUPER SLOW.
-def find_the_best_move(board, valid_moves, player_color):
+def get_greedy_algorithm_best_move(board, valid_moves: list, player_color: str):
     opponents_min_max_score = CHECKMATE
     best_move = None
     piece_to_move = None
@@ -46,14 +48,14 @@ def find_the_best_move(board, valid_moves, player_color):
                     for opponents_move in opponents_moves[3]:
                         opponents_temporary_board.apply_move_on_screen(
                             opponents_temporary_piece, opponents_move, not_allowed=True)
-                        opponents_temporary_board.get_valid_moves(opponents_color)
+
                         if opponents_temporary_board.is_checkmate(opponents_temporary_piece, opponents_move):
                             board_score = CHECKMATE
                         elif opponents_temporary_board.is_stalemate(opponents_temporary_piece, opponents_move):
                             board_score = STALEMATE
                         else:
                             board_score = calculate_board_score_material(opponents_temporary_board)
-                            print(f'NEW BOARD SCORE : {board_score}')
+                            # print(f'NEW BOARD SCORE : {board_score}')
 
                         if board_score > opponents_max_score:
                             opponents_max_score = board_score
@@ -77,3 +79,14 @@ def calculate_board_score_material(board):
                 score_material += piece.value
 
     return score_material
+
+
+def get_best_move_from_trained_network(board, player_color):
+    board_state = board.get_board_state()
+    fen_string = Translator.translate_board_matrix_to_fen(board_state, player_color)
+    network_best_move = network.get_ai_move(fen_string, DEPTH)
+    print(f'NETWORK BEST MOVE : {network_best_move}')
+    best_move = Translator.translate_fen_to_board_matrix(network_best_move)
+
+    print(f'BEST MinMAX MOVE : {best_move}')
+    return best_move
