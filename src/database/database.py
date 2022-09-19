@@ -1,9 +1,23 @@
+import os
 import json
+from os.path import join
+from pathlib import Path
+from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
+dotenv_path = join(Path(__file__).parents[1], '.env')
+load_dotenv(dotenv_path)
+
+DB_NAME = os.environ.get('DB_NAME')
+DB_HOSTNAME = os.environ.get('HOSTNAME')
+DB_PASSWORD = os.environ.get('PASSWORD')
+ADDRESS = os.environ.get('ADDRESS')
+PORT = os.environ.get('PORT')
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost:3306/chess'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + DB_HOSTNAME + ':' + DB_PASSWORD + '@' + ADDRESS + ':' + \
+                                        PORT + '/' + DB_NAME
 
 app.app_context().push()
 
@@ -27,28 +41,13 @@ class BoardState(db.Model):
 
     @staticmethod
     def query_board_state(board_state):
-        print(f'-----------------------------------------------')
-        print(f'Requesting board to the Chess database')
-        # print(f'BOARD STATE BEFORE JSONIFY : {board_state}')
-        # print(f'BOARD STATE AFTER JSONIFY : {json.dumps(board_state)}')
-        print(
-            f'REQUEST RESULT : '
-            f'{db.session.query(BoardState).filter(BoardState.board_state == json.dumps(board_state)).first()}'
-        )
         if db.session.query(BoardState).filter(BoardState.board_state == json.dumps(board_state)).first():
-            print('TRUE ==> THE REQUEST WORKED OUT !!!')
             return True
 
-        print('FALSE ==> THE REQUEST FAILED !!!')
         return False
 
     @staticmethod
     def query_best_move_based_on_board_state_and_player(board_state, next_player_color):
-        # print(f'-----------------------------------------------')
-        # print(f'Requesting BEST MOVE to the Chess database')
-        # print(f'BOARD STATE : {json.dumps(board_state)}')
-        # print(f'PLAYER COLOR : {next_player_color}')
-
         result = db.session.query(BoardState.best_move).filter(
                     BoardState.board_state == json.dumps(board_state),
                     BoardState.active_player == next_player_color).first()
