@@ -458,23 +458,32 @@ class Board:
             valid_moves = self.get_valid_moves(next_player_color)
             # AI GREEDY ALGO BEST MOVE. DEPRECIATED
             # piece_to_move_and_best_move = get_the_best_move(self, valid_moves, next_player_color)
-            piece_to_move_and_best_move = get_best_move_from_trained_network(self, next_player_color)
+            network_best_move = get_best_move_from_trained_network(self, next_player_color)
 
-            piece_to_store = piece_to_move_and_best_move[0].name
-            piece_color_to_store = piece_to_move_and_best_move[0].color
-            piece_value_to_store = abs(piece_to_move_and_best_move[0].value)
-            base_square_row_to_store = piece_to_move_and_best_move[1].base_square.row
-            base_square_column_to_store = piece_to_move_and_best_move[1].base_square.column
-            final_square_row_to_store = piece_to_move_and_best_move[1].final_square.row
-            final_square_column_to_store = piece_to_move_and_best_move[1].final_square.column
+            base_square_row_to_store = network_best_move[0][0]
+            base_square_column_to_store = network_best_move[0][1]
+            final_square_row_to_store = network_best_move[1][0]
+            final_square_column_to_store = network_best_move[1][1]
+
+            for row in range(ROWS):
+                for column in range(COLUMNS):
+                    if row == base_square_row_to_store and column == base_square_column_to_store:
+                        square = self.squares[row][column]
+                        if square.has_piece():
+                            ai_piece_to_move = square.piece
+                            ai_move_to_do = Move(
+                                Square(base_square_row_to_store, base_square_column_to_store),
+                                Square(final_square_row_to_store, final_square_column_to_store)
+                            )
+                            piece_to_store = square.piece.name
+                            piece_color_to_store = square.piece.color
+                            piece_value_to_store = abs(square.piece.value)
 
             best_move_matrix = [
                 [piece_to_store, piece_color_to_store, piece_value_to_store],
-                [base_square_row_to_store,base_square_column_to_store],
+                [base_square_row_to_store, base_square_column_to_store],
                 [final_square_row_to_store, final_square_column_to_store]
             ]
-
-            # print(best_move_matrix)
 
             print(f'-----------------------------------------------')
             print(f'BOARD STATE AND BEST MOVE ARE ABOUT TO BE SAVED')
@@ -482,12 +491,10 @@ class Board:
                 self.get_board_state(), next_player_color,
                 best_move_matrix)
 
-            ai_piece_to_move = piece_to_move_and_best_move[0]
             ai_piece_row = base_square_row_to_store
             ai_piece_column = base_square_column_to_store
-            ai_move_to_do = piece_to_move_and_best_move[1]
 
-            if piece_to_move_and_best_move is None:
+            if ai_piece_to_move is None and ai_move_to_do is None:
                 piece_to_move_and_best_move = get_random_move(valid_moves)  # AI RANDOM MOVE
 
                 ai_piece_to_move = piece_to_move_and_best_move[0]

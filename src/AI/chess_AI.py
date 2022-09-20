@@ -1,13 +1,13 @@
 import copy
 import math
 import random
-import src.AI.min_max_network as network
 from src.consts.consts import *
+import src.AI.min_max_network as network
 from src.build.translator import Translator
 
 CHECKMATE = math.inf
 STALEMATE = 0
-DEPTH = 1
+DEPTH = 3
 
 
 # Function returning a random move to do for the AI.
@@ -86,7 +86,7 @@ def get_best_move_from_trained_network(board, player_color):
     fen_string = Translator.translate_board_matrix_to_fen(board_state, player_color)
     network_best_move = network.get_ai_move(fen_string, DEPTH)
     print(f'NETWORK BEST MOVE : {network_best_move}')
-    best_move = Translator.translate_fen_to_board_matrix(network_best_move)
+    best_move = Translator.translate_network_best_move_to_matrix_move(network_best_move)
 
     print(f'BEST MinMAX MOVE : {best_move}')
     return best_move
