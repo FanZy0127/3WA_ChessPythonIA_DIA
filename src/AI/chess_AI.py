@@ -54,7 +54,6 @@ def get_greedy_algorithm_best_move(board, valid_moves: list, player_color: str):
                             board_score = STALEMATE
                         else:
                             board_score = calculate_board_score_material(opponents_temporary_board)
-                            # print(f'NEW BOARD SCORE : {board_score}')
 
                         if board_score > opponents_max_score:
                             opponents_max_score = board_score
