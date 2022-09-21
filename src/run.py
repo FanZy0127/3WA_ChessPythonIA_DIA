@@ -13,7 +13,7 @@ class Run:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption('3WA_DIA : Baptiste HARAMBOURE IA Chess Project')
+        pygame.display.set_caption('3WA_DIA : Baptiste HARAMBOURE AI Chess Project')
         self.chess_game = Chess()
 
     try:

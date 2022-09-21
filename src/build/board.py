@@ -8,7 +8,6 @@ from src.consts.consts import *
 from src.build.move import Move
 from src.build.square import Square
 from src.database.database import *
-from src.build.translator import Translator
 
 
 class Board:
@@ -419,22 +418,14 @@ class Board:
     def generate_ai_valid_moves(self, next_player_color):
 
         try:
-            BoardState.query_board_state(self.get_board_state())
-
-            print(f'-----------------------------------------------')
-            print('THE BOARD HAS ALREADY BEEN REGISTERED IN DATABASE')
-
+            # BoardState.query_board_state(self.get_board_state())
             piece_to_move_and_best_move = BoardState.query_best_move_based_on_board_state_and_player(
-                self.get_board_state(), next_player_color)
-
+                self.get_board_state(), next_player_color, DEPTH)
             print(f'-----------------------------------------------')
-            print(f'HERE ARE THE PIECE TO MOVE AND ITS BEST MOVE : {piece_to_move_and_best_move}')
+            print('THE BOARD HAS ALREADY BEEN REGISTERED IN DATABASE WITH THIS DEPTH AND THIS COLOR')
 
             ai_piece_row = piece_to_move_and_best_move[1][0]
-            print(f'AI Piece Row : {ai_piece_row}')
-
             ai_piece_column = piece_to_move_and_best_move[1][1]
-            print(f'AI Piece Column : {ai_piece_column}')
 
             for row in range(ROWS):
                 for column in range(COLUMNS):
@@ -445,20 +436,18 @@ class Board:
                                 piece_to_move_and_best_move[0][1] and row == ai_piece_row and column == ai_piece_column:
                             ai_piece_to_move = piece
 
-            print(f'-----------------------------------------------')
-            print(f'Piece to move : {ai_piece_to_move}')
-
             base_square = Square(ai_piece_row, ai_piece_column)
             final_square = Square(piece_to_move_and_best_move[2][0], piece_to_move_and_best_move[2][1])
             ai_move_to_do = Move(base_square, final_square)
-            print(f'AI Move To Do {ai_move_to_do}')
 
             ai_piece_to_move.add_move(ai_move_to_do)
         except:
+            print(f'-----------------------------------------------')
+            print('THE BOARD HAS NEVER BEEN REGISTERED IN DATABASE WITH THIS DEPTH OR THIS COLOR')
             valid_moves = self.get_valid_moves(next_player_color)
             # AI GREEDY ALGO BEST MOVE. DEPRECIATED
             # piece_to_move_and_best_move = get_the_best_move(self, valid_moves, next_player_color)
-            network_best_move = get_best_move_from_trained_network(self, next_player_color)
+            network_best_move = get_best_move_from_trained_network(self, DEPTH, next_player_color)
 
             base_square_row_to_store = network_best_move[0][0]
             base_square_column_to_store = network_best_move[0][1]
@@ -489,7 +478,7 @@ class Board:
             print(f'BOARD STATE AND BEST MOVE ARE ABOUT TO BE SAVED')
             BoardState.save_board_state(
                 self.get_board_state(), next_player_color,
-                best_move_matrix)
+                best_move_matrix, DEPTH)
 
             ai_piece_row = base_square_row_to_store
             ai_piece_column = base_square_column_to_store

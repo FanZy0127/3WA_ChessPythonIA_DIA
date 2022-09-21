@@ -1,6 +1,9 @@
 import os
 import chess
 import chess.engine
+from os.path import join
+from pathlib import Path
+from dotenv import load_dotenv
 import numpy
 import pydotplus
 import keras.utils
@@ -11,7 +14,10 @@ import keras.callbacks as callbacks
 import keras.optimizers as optimizers
 from src.consts.consts import SQUARE_COLUMN_INDEXES
 
-os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz/bin/'
+dotenv_path = join(Path(__file__).parents[1], '.env')
+load_dotenv(dotenv_path)
+GRAPHVIZ = os.environ.get('GRAPHVIZ_PATH')
+os.environ["PATH"] += os.pathsep + GRAPHVIZ
 keras.utils.vis_utils.pydot = pydotplus
 
 
@@ -156,7 +162,7 @@ def minimax(board, depth, alpha, beta, maximizing_player):
 
 
 # Function calling for the board, and getting the best move possible for the wanted color.
-def get_ai_move(fen, depth):
+def get_ai_move(fen: str, depth: int):
     board = generate_board_from_fen(fen)
     print(f'BOARD AS READ BY THE NETWORK : \n{board}')
     best_move = None

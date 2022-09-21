@@ -7,7 +7,6 @@ from src.build.translator import Translator
 
 CHECKMATE = math.inf
 STALEMATE = 0
-DEPTH = 3
 
 
 # Function returning a random move to do for the AI.
@@ -81,10 +80,10 @@ def calculate_board_score_material(board):
     return score_material
 
 
-def get_best_move_from_trained_network(board, player_color):
+def get_best_move_from_trained_network(board, depth: int, player_color: str):
     board_state = board.get_board_state()
     fen_string = Translator.translate_board_matrix_to_fen(board_state, player_color)
-    network_best_move = network.get_ai_move(fen_string, DEPTH)
+    network_best_move = network.get_ai_move(fen_string, depth)
     print(f'NETWORK BEST MOVE : {network_best_move}')
     best_move = Translator.translate_network_best_move_to_matrix_move(network_best_move)
 

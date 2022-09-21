@@ -29,39 +29,43 @@ class BoardState(db.Model):
     board_state = db.Column(db.Text, nullable=False)
     active_player = db.Column(db.Enum('black', 'white'), nullable=False)
     best_move = db.Column(db.Text, nullable=False)
+    depth = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, board_state, active_player, best_move):
+    def __init__(self, board_state, active_player, best_move, depth):
         self.board_state = board_state
         self.active_player = active_player
         self.best_move = best_move
+        self.depth = depth
 
     @staticmethod
     def create_database():
         return db.create_all()
 
     @staticmethod
-    def query_board_state(board_state):
+    def query_board_state(board_state: list):
         if db.session.query(BoardState).filter(BoardState.board_state == json.dumps(board_state)).first():
             return True
 
         return False
 
     @staticmethod
-    def query_best_move_based_on_board_state_and_player(board_state, next_player_color):
+    def query_best_move_based_on_board_state_and_player(board_state: list, next_player_color: str, depth: int):
         result = db.session.query(BoardState.best_move).filter(
                     BoardState.board_state == json.dumps(board_state),
-                    BoardState.active_player == next_player_color).first()
+                    BoardState.active_player == next_player_color,
+                    BoardState.depth == depth).first()
 
         result_as_dict = result._asdict()
 
         return json.loads(result_as_dict["best_move"])
 
     @staticmethod
-    def save_board_state(board_state, next_player_color, best_move):
+    def save_board_state(board_state: list, next_player_color: str, best_move: list, depth: int):
         board_state = BoardState(
             json.dumps(board_state),
             next_player_color,
-            json.dumps(best_move)
+            json.dumps(best_move),
+            depth
         )
 
         db.session.add(board_state)

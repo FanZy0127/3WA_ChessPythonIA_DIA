@@ -9,6 +9,9 @@ ROWS = 8
 COLUMNS = 8
 SQUARE_SIZE = WIDTH // COLUMNS
 
+# Depth the neural network will dig into for the best possible move
+DEPTH = 1
+
 SQUARE_COLUMN_INDEXES = {
     'a': 0,
     'b': 1,
