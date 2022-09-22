@@ -53,7 +53,7 @@ class Translator:
         return fen_string + (' w' if player_color == 'white' else ' b')
 
     @staticmethod
-    def translate_network_best_move_to_matrix_move(network_best_move) -> list:
+    def translate_network_best_move_to_move_matrix(network_best_move) -> list:
         move_matrix = []
         count = 0
         base_square_column = 0

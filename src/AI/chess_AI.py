@@ -84,7 +84,7 @@ def get_best_move_from_trained_network(board, depth: int, player_color: str):
     fen_string = Translator.translate_board_matrix_to_fen(board_state, player_color)
     network_best_move = network.get_ai_move(fen_string, depth)
     print(f'NETWORK BEST MOVE : {network_best_move}')
-    best_move = Translator.translate_network_best_move_to_matrix_move(network_best_move)
+    best_move = Translator.translate_network_best_move_to_move_matrix(network_best_move)
 
     print(f'BEST MinMAX MOVE : {best_move}')
     return best_move
