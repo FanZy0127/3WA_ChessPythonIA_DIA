@@ -1,5 +1,5 @@
 # File containing main constants necessary to construct the game
-
+import math
 # Screen dimensions
 HEIGHT = 960
 WIDTH = 960
@@ -33,3 +33,5 @@ SQUARE_ROW_INDEXES = {
     '7': 1,
     '8': 0
 }
+CHECKMATE = math.inf
+STALEMATE = 0

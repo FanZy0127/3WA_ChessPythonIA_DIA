@@ -1,12 +1,9 @@
 import copy
-import math
 import random
 from src.consts.consts import *
 import src.AI.min_max_network as network
 from src.build.translator import Translator
-
-CHECKMATE = math.inf
-STALEMATE = 0
+from src.consts.consts import CHECKMATE, STALEMATE
 
 
 # Function returning a random move to do for the AI.
