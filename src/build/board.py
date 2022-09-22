@@ -29,7 +29,7 @@ class Board:
                 self.squares[row][column] = Square(row, column)
 
     # Method initializing the pieces positions
-    def _add_pieces(self, color):
+    def _add_pieces(self, color: str):
 
         row_pieces, row_pawns = (7, 6) if color == 'white' else (0, 1)
 
@@ -62,7 +62,7 @@ class Board:
 
         return Move(base_square, final_square)
 
-    def apply_move_on_screen(self, piece, move, not_allowed=False):
+    def apply_move_on_screen(self, piece: Piece, move: Move, not_allowed=False):
         base_square = move.base_square
         final_square = move.final_square
 
@@ -91,10 +91,10 @@ class Board:
         self.last_registered_move = move
 
     @staticmethod
-    def validate_move(piece, move):
+    def validate_move(piece: Piece, move: Move):
         return move in piece.legal_moves
 
-    def set_prise_en_passant(self, piece):
+    def set_prise_en_passant(self, piece: Piece):
         if not isinstance(piece, Pawn):
             return
 
@@ -183,19 +183,6 @@ class Board:
                     if boolean:
                         if not self.is_in_check(piece, move):
                             piece.add_move(move)
-                            # if piece.color == 'white':
-                            #     print(f'Allowed Move Row - 1 : {allowed_move_row - 1}')
-                            # else:
-                            #     print(f'Allowed Move Row + 1 : {allowed_move_row + 1}')
-                            #
-                            # print(
-                            #     f'Pièce, row, column : {piece.name, piece.color, row, column}')
-                            # print(
-                            #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed move row : {allowed_move_row}')
-                            # print(
-                            #     f'Pièce, row, column : {piece.name, piece.color, row, column}/ Target square is empty : {self.squares[allowed_move_row][column].is_empty()}')
-                            # print('-------------------------------------------------------------------------------')
-                        # TODO Check if this is not causing bugs on check for castlings
                         else:
                             break
                     else:
@@ -219,38 +206,13 @@ class Board:
                             allowed_steps == 2 and
                             self.squares[allowed_move_row][column].is_empty() and
                             self.squares[allowed_move_row + 1][column].is_empty()):
-                        # print( f'Pièce, row, column : {piece.name, piece.color, row, column} IS ALLOWED TO MOVE')
                         move = self.set_move(row, column, allowed_move_row, column)
 
                         if boolean:
                             if not self.is_in_check(piece, move):
                                 piece.add_move(move)
-                                # if piece.color == 'white':
-                                #     print(f'Allowed Move Row - 1 : {allowed_move_row - 1}')
-                                # else:
-                                #     print(f'Allowed Move Row + 1 : {allowed_move_row + 1}')
-                                #
-                                # print(
-                                #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Fin de la loop : {end_of_loop}')
-                                # print(
-                                #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed move row : {allowed_move_row}')
-                                # print(
-                                #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed steps : {allowed_steps} / Target square is empty : {self.squares[allowed_move_row][column].is_empty()}')
-                                # print('-------------------------------------------------------------------------------')
                         else:
                             piece.add_move(move)
-                            # if piece.color == 'white':
-                            #     print(f'Allowed Move Row - 1 : {allowed_move_row - 1}')
-                            # else:
-                            #     print(f'Allowed Move Row + 1 : {allowed_move_row + 1}')
-
-                            # print(
-                            #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Fin de la loop : {end_of_loop}')
-                            # print(
-                            #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed move row : {allowed_move_row}')
-                            # print(
-                            #     f'Pièce, row, column : {piece.name, piece.color, row, column} / Allowed steps : {allowed_steps} / Target square is empty : {self.squares[allowed_move_row][column].is_empty()}')
-                            # print('-------------------------------------------------------------------------------')
                     else:
                         break  # If there's already a piece in front of our pawn, it can't move straight
                 else:
@@ -367,7 +329,7 @@ class Board:
         elif isinstance(piece, King):
             king_moves()
 
-    def is_in_check(self, piece, move):
+    def is_in_check(self, piece: Piece, move: Move) -> bool:
         temporary_piece = copy.deepcopy(piece)
         temporary_board = copy.deepcopy(self)
         temporary_board.apply_move_on_screen(temporary_piece, move, not_allowed=True)
@@ -384,7 +346,7 @@ class Board:
 
         return False
 
-    def is_checkmate(self, piece, move):
+    def is_checkmate(self, piece: Piece, move: Move) -> bool:
         if isinstance(piece, King) and self.is_in_check(piece, move) and not piece.legal_moves:
             self.game_over = True
             self.loser = piece.color
@@ -392,14 +354,14 @@ class Board:
 
         return False
 
-    def is_stalemate(self, piece, move):
+    def is_stalemate(self, piece: Piece, move: Move) -> bool:
         if isinstance(piece, King) and not self.is_in_check(piece, move) and not piece.legal_moves:
             self.draw = True
             return True
 
         return False
 
-    def get_board_state(self):
+    def get_board_state(self) -> list:
         board_state = []
 
         for row in range(ROWS):
@@ -415,14 +377,12 @@ class Board:
 
         return board_state
 
-    def generate_ai_valid_moves(self, next_player_color):
+    def generate_ai_valid_moves(self, next_player_color: str):
 
         try:
-            # BoardState.query_board_state(self.get_board_state())
+            # The board state has already been saved in db with this depth and this color to play
             piece_to_move_and_best_move = BoardState.query_best_move_based_on_board_state_and_player(
                 self.get_board_state(), next_player_color, DEPTH)
-            print(f'-----------------------------------------------')
-            print('THE BOARD HAS ALREADY BEEN REGISTERED IN DATABASE WITH THIS DEPTH AND THIS COLOR')
 
             ai_piece_row = piece_to_move_and_best_move[1][0]
             ai_piece_column = piece_to_move_and_best_move[1][1]
@@ -442,8 +402,7 @@ class Board:
 
             ai_piece_to_move.add_move(ai_move_to_do)
         except:
-            print(f'-----------------------------------------------')
-            print('THE BOARD HAS NEVER BEEN REGISTERED IN DATABASE WITH THIS DEPTH OR THIS COLOR')
+            # The board state has never been saved in db with this depth to dig into, or this color to be about to play
             valid_moves = self.get_valid_moves(next_player_color)
             # AI GREEDY ALGO BEST MOVE. DEPRECIATED
             # piece_to_move_and_best_move = get_the_best_move(self, valid_moves, next_player_color)
@@ -473,9 +432,7 @@ class Board:
                 [base_square_row_to_store, base_square_column_to_store],
                 [final_square_row_to_store, final_square_column_to_store]
             ]
-
-            print(f'-----------------------------------------------')
-            print(f'BOARD STATE AND BEST MOVE ARE ABOUT TO BE SAVED')
+            # Saving board state in db
             BoardState.save_board_state(
                 self.get_board_state(), next_player_color,
                 best_move_matrix, DEPTH)
@@ -509,7 +466,7 @@ class Board:
                             if isinstance(ai_piece_to_move, Pawn):
                                 self.promote_pawn(ai_piece_to_move)
 
-    def get_valid_moves(self, next_player_color):
+    def get_valid_moves(self, next_player_color: str) -> list:
         valid_moves = []
 
         for row in range(ROWS):

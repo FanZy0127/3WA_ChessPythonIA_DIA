@@ -4,7 +4,7 @@ from src.consts.consts import *
 class Translator:
 
     @staticmethod
-    def translate_board_matrix_to_fen(board_matrix: list, player_color: str):
+    def translate_board_matrix_to_fen(board_matrix: list, player_color: str) -> str:
         fen_string = ''
 
         for row_matrix in board_matrix:
@@ -53,7 +53,7 @@ class Translator:
         return fen_string + (' w' if player_color == 'white' else ' b')
 
     @staticmethod
-    def translate_network_best_move_to_matrix_move(network_best_move):
+    def translate_network_best_move_to_matrix_move(network_best_move) -> list:
         move_matrix = []
         count = 0
         base_square_column = 0

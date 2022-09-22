@@ -41,7 +41,7 @@ class BoardState(db.Model):
         return db.create_all()
 
     @staticmethod
-    def query_board_state(board_state: list):
+    def query_board_state(board_state: list) -> bool:
         if db.session.query(BoardState).filter(BoardState.board_state == json.dumps(board_state)).first():
             return True
 

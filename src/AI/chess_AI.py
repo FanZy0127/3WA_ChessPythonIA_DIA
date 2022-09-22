@@ -67,7 +67,7 @@ def get_greedy_algorithm_best_move(board, valid_moves: list, player_color: str):
 
 
 # Function to calculate the current board score (naive solution)
-def calculate_board_score_material(board):
+def calculate_board_score_material(board) -> int:
     score_material = 0
 
     for row in range(ROWS):
