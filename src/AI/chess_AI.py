@@ -14,7 +14,7 @@ def get_random_move(valid_moves: list):
     return valid_moves[random.randint(0, len(valid_moves) - 1)]
 
 
-# Function returning the best move for the AI, based on material, 1 depth ahead (greedy algo).
+# Function returning the best move for the AI, based on material, 1 depth ahead per loop (greedy algo).
 # Turned it into a basic self made dirty MinMax algorithm, which ends up being SUPER SLOW.
 def get_greedy_algorithm_best_move(board, valid_moves: list, player_color: str):
     opponents_min_max_score = CHECKMATE
