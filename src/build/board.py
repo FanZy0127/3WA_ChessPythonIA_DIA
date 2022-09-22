@@ -375,7 +375,7 @@ class Board:
 
         return board_state
 
-    def generate_ai_valid_moves(self, next_player_color: str):
+    def get_ai_best_move(self, next_player_color: str):
 
         try:
             # The board state has already been saved in db with this depth and this color to play

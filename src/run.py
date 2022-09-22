@@ -126,7 +126,7 @@ class Run:
 
                 # When AI plays
                 else:
-                    board.generate_ai_valid_moves(game.next_player)
+                    board.get_ai_best_move(game.next_player)
                     game.next_turn()
 
                 # Check when the game is closed
