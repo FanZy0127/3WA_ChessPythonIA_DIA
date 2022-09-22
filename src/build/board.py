@@ -1,6 +1,4 @@
-import copy
 import time
-import json
 from easygui import *
 from src.AI.chess_AI import *
 from src.build.piece import *
