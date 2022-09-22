@@ -16,8 +16,7 @@ ADDRESS = os.environ.get('ADDRESS')
 PORT = os.environ.get('PORT')
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + DB_HOSTNAME + ':' + DB_PASSWORD + '@' + ADDRESS + ':' + \
-                                        PORT + '/' + DB_NAME
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DB_HOSTNAME}:{DB_PASSWORD}@{ADDRESS}:{PORT}/{DB_NAME}'
 
 app.app_context().push()
 
