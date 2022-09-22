@@ -104,7 +104,10 @@ def get_dataset():
     return b, v
 
 
-def train_model(model, x_train, y_train):
+def train_model():
+    # model = build_model(32, 4)
+    model = build_model_residual(32, 4)
+    x_train, y_train = get_dataset()
     model.compile(optimizer=optimizers.Adam(5e-4), loss='mean_squared_error')
     model.summary()
     model.fit(x_train, y_train,
