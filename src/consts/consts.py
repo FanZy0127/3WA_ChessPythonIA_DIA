@@ -9,8 +9,10 @@ ROWS = 8
 COLUMNS = 8
 SQUARE_SIZE = WIDTH // COLUMNS
 
+CHECKMATE = math.inf
+STALEMATE = 0
 # Depth the neural network will dig into for the best possible move
-DEPTH = 1
+DEPTH = 6
 
 SQUARE_COLUMN_INDEXES = {
     'a': 0,
@@ -33,5 +35,3 @@ SQUARE_ROW_INDEXES = {
     '7': 1,
     '8': 0
 }
-CHECKMATE = math.inf
-STALEMATE = 0

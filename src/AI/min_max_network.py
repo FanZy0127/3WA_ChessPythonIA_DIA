@@ -97,7 +97,8 @@ def build_model_residual(conv_size, conv_depth):
 
 
 def get_dataset():
-    container = numpy.load('data/dataset/dataset.npz')
+    print(join(Path(__file__).parents[1], 'data/dataset/dataset.npz'))
+    container = numpy.load(join(Path(__file__).parents[0], 'data/dataset/dataset.npz'))
     b, v = container['b'], container['v']
     v = numpy.asarray(v / abs(v).max() / 2 + 0.5, dtype=numpy.float32)  # normalization (0 - 1)
 
@@ -106,19 +107,20 @@ def get_dataset():
 
 def train_model():
     # model = build_model(32, 4)
+    print(f'HERE WE ARE TRAINING THE MODEL')
     model = build_model_residual(32, 4)
     x_train, y_train = get_dataset()
     model.compile(optimizer=optimizers.Adam(5e-4), loss='mean_squared_error')
     model.summary()
     model.fit(x_train, y_train,
               batch_size=2048,
-              epochs=20,
+              epochs=30,
               verbose=1,
               validation_split=0.1,
               callbacks=[callbacks.ReduceLROnPlateau(monitor='loss', patience=10),
                          callbacks.EarlyStopping(monitor='loss', patience=15, min_delta=1e-4)])
 
-    model.save('models/ai_models/model.h5')
+    model.save(join(Path(__file__).parents[0], 'models/models/residual_model.h5'))
 
 
 # used for the minimax algorithm
@@ -129,12 +131,7 @@ def minimax_eval(board, model):
     return model(board_3d)[0][0]
 
 
-def minimax(board, depth, alpha, beta, maximizing_player):
-    # model = build_model(32, 4)
-    # plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=False)
-    model = build_model_residual(32, 4)
-    # plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=False)
-
+def minimax(model, board, depth, alpha, beta, maximizing_player):
     if depth == 0 or board.is_game_over():
         return minimax_eval(board, model)
 
@@ -142,7 +139,7 @@ def minimax(board, depth, alpha, beta, maximizing_player):
         max_eval = -numpy.inf
         for move in board.legal_moves:
             board.push(move)
-            min_max_eval = minimax(board, depth - 1, alpha, beta, False)
+            min_max_eval = minimax(model, board, depth - 1, alpha, beta, False)
             board.pop()
             max_eval = max(max_eval, min_max_eval)
             alpha = max(alpha, min_max_eval)
@@ -154,7 +151,7 @@ def minimax(board, depth, alpha, beta, maximizing_player):
         min_eval = numpy.inf
         for move in board.legal_moves:
             board.push(move)
-            min_max_eval = minimax(board, depth - 1, alpha, beta, True)
+            min_max_eval = minimax(model, board, depth - 1, alpha, beta, True)
             board.pop()
             min_eval = min(min_eval, min_max_eval)
             beta = min(beta, min_max_eval)
@@ -166,6 +163,19 @@ def minimax(board, depth, alpha, beta, maximizing_player):
 
 # Function calling for the board, and getting the best move possible for the wanted color.
 def get_ai_move(fen: str, depth: int):
+    # model = build_model(32, 4)
+    # plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=False)
+    # train_model()
+    # model = build_model_residual(32, 4)
+    # plot_model(
+    #     model,
+    #     to_file=join(Path(__file__).parents[0], 'models/residual_model_schemes/residual_model_plot.png'),
+    #     show_shapes=True,
+    #     show_layer_names=False
+    # )
+    model_path = join(Path(__file__).parents[0], 'models/models/residual_model.h5')
+    model = models.load_model(model_path)
+
     board = generate_board_from_fen(fen)
     print(f'BOARD AS READ BY THE NETWORK : \n{board}')
     best_move = None
@@ -173,7 +183,7 @@ def get_ai_move(fen: str, depth: int):
 
     for move in board.legal_moves:
         board.push(move)
-        min_max_eval = minimax(board, depth - 1, -numpy.inf, numpy.inf, False)
+        min_max_eval = minimax(model, board, depth - 1, -numpy.inf, numpy.inf, False)
         board.pop()
         if min_max_eval > max_eval:
             max_eval = min_max_eval

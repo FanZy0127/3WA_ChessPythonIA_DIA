@@ -8,7 +8,7 @@ from src.build.chess_game import Chess
 from src.database.database import *
 
 
-class Run:
+class Main:
 
     def __init__(self):
         pygame.init()
@@ -137,5 +137,5 @@ class Run:
             pygame.display.update()
 
 
-run = Run()
+run = Main()
 run.infinite_run_loop()
