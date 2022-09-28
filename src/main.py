@@ -1,6 +1,6 @@
 import sys
 import pygame
-from consts.consts import *
+from src.consts.consts import *
 from src.build.piece import *
 from src.build.move import Move
 from src.build.square import Square
@@ -15,6 +15,8 @@ class Main:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption('3WA_DIA : Baptiste HARAMBOURE AI Chess Project')
         self.chess_game = Chess()
+        self.first_player = True  # True only if a human is playing white pieces. False if the AI is playing.
+        self.second_player = False  # True only if a human is playing black pieces. False if the AI is playing.
 
     try:
         BoardState.query.all()
@@ -34,8 +36,10 @@ class Main:
         screen = self.screen
         dragger = self.chess_game.dragger
         board = self.chess_game.board
-        first_player = True  # True only if a human is playing white pieces. False if the AI is playing.
-        second_player = False  # True only if a human is playing black pieces. False if the AI is playing.
+
+        first_player = self.first_player
+        second_player = self.second_player
+
         first_player_color = 'white'
         second_player_color = 'black'
 

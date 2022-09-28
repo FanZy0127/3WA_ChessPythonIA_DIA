@@ -12,7 +12,7 @@ SQUARE_SIZE = WIDTH // COLUMNS
 CHECKMATE = math.inf
 STALEMATE = 0
 # Depth the neural network will dig into for the best possible move
-DEPTH = 6
+DEPTH = 1
 
 SQUARE_COLUMN_INDEXES = {
     'a': 0,

@@ -3,6 +3,7 @@ import chess
 import chess.engine
 from os.path import join
 from pathlib import Path
+import pandas as pd
 from dotenv import load_dotenv
 import numpy
 import pydotplus
@@ -97,12 +98,11 @@ def build_model_residual(conv_size, conv_depth):
 
 
 def get_dataset():
-    print(join(Path(__file__).parents[1], 'data/dataset/dataset.npz'))
     container = numpy.load(join(Path(__file__).parents[0], 'data/dataset/dataset.npz'))
-    b, v = container['b'], container['v']
-    v = numpy.asarray(v / abs(v).max() / 2 + 0.5, dtype=numpy.float32)  # normalization (0 - 1)
+    x_train, y_train = container['b'], container['v']
+    y_train = numpy.asarray(y_train / abs(y_train).max() / 2 + 0.5, dtype=numpy.float32)  # normalization (0 - 1)
 
-    return b, v
+    return x_train, y_train
 
 
 def train_model():
@@ -114,7 +114,7 @@ def train_model():
     model.summary()
     model.fit(x_train, y_train,
               batch_size=2048,
-              epochs=30,
+              epochs=75,
               verbose=1,
               validation_split=0.1,
               callbacks=[callbacks.ReduceLROnPlateau(monitor='loss', patience=10),
